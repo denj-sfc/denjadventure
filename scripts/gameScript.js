@@ -169,14 +169,41 @@ function santa() {
     // if enough tasks done, end game
     if (tasks >= 4) {
         outputText("Santa rises slowly from the command chair, his glossy eyes locking onto yours. The air thickens around you, charged with a strange, expectant energy.");
-        outputText("His voice, low and otherworldly, whispers: 'Thank you...'");
-        outputText("The room trembles violently, walls cracking and dust falling like fine snow. Light pours in through every new fracture, bathing the space in a blinding, surreal glow.");
-        outputText("Suddenly, the surroundings dissolve, leaving only a white void stretching endlessly in all directions. Your task is complete, yet a lingering unease fills the emptiness.");
-        setTimeout(function () {
-            window.location.href = "gameEnd.html";
+        
+        setTimeout(function() {
+            outputText("His voice, low and otherworldly, whispers: 'Thank you...'");
+            var audio = new Audio("/audio/bellSound.mp3");
+            audio.play();
+        }, 2000);
+        
+        setTimeout(function() {
+            outputText("The room trembles violently, walls cracking and dust falling like fine snow. Cracks of brilliant light splinter across reality.");
+        }, 4000);
+        
+        setTimeout(function() {
+            outputText("The sleigh materializes before you, its runners glowing with ancient power. The reindeer's eyes burn with ethereal light, alive and aware.");
+        }, 6000);
+        
+        setTimeout(function() {
+            outputText("You feel yourself lifted, gravity releasing its grip. The ground falls away beneath your feet as the North Pole dissolves into starlight and shadow.");
+        }, 8000);
+        
+        setTimeout(function() {
+            outputText("Time fractures. In a single eternal moment, you witness everything—endless deliveries across countless worlds, children's wonder made manifest, centuries of magic and purpose intertwined.");
         }, 10000);
+        
+        setTimeout(function() {
+            outputText("The visions fade. A white void stretches endlessly in all directions, infinite and serene. You have awakened something ancient, and it has acknowledged you.");
+        }, 12000);
+        
+        setTimeout(function() {
+            outputText("Your task is complete. The North Pole fades into memory and dream...");
+        }, 14000);
+        
+        setTimeout(function() {
+            window.location.href = "gameEnd.html";
+        }, 16000);
     } else {
-        // not enough tasks, stay in game
         outputText("Santa stirs slightly, his eyes flickering open, but he remains seated, motionless, as if waiting for something more.");
         outputText("A soft rumble passes through the room, the air heavy with anticipation. Perhaps you still have more to do before he truly awakens.");
         john()
