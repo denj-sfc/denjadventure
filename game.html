@@ -6,15 +6,14 @@
     <title>Sleeping Snow - Game</title>
     <link href="/styles/gameStyle.css" rel="stylesheet" type="text/css" />
     <script src="/scripts/gameScript.js"></script>
+    <audio id="menuMusic" src="/audio/menuMusic.mp3" loop muted autoplay></audio>
 </head>
-
-<!-- sick audio -->
-<audio id="menuMusic" src="/audio/menuMusic.mp3" loop muted autoplay></audio>
 
 <body id="body" onload="initGame(); enableMenuMusic();">
     <div id="gridBox">
         <!-- big output box -->
         <div id="output"></div>
+
         <!-- whole sidebar -->
         <div id="sidebar">
             <!-- minimap -->
@@ -22,22 +21,20 @@
                 <p>Minimap</p>
                 <div id="minimap-grid"></div>
             </div>
+
             <!-- all items -->
             <div id="itemlist">
                 <p>Items:</p>
-                <div id="items-container">
-                </div>
+                <div id="items-container"></div>
             </div>
         </div>
+
         <!-- user inputs -->
         <div id="cli" contenteditable="true" onkeydown="checkInput(event)"></div>
-        <!-- little box in bottom right corner -->
+
+        <!-- help text box -->
         <div class="help-text">Type "help" for a list of commands</div>
     </div>
 </body>
 
 </html>
-
-<!--
-    http://127.0.0.1:5500/JavaScript/DenjAdventure/game.html
--->

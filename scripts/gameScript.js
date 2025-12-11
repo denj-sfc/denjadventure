@@ -1,48 +1,50 @@
 //work on santa()
 
 // declare variables
-let tasks = 0
-let asks = 0
-let rooms = [], roomsNum
-let items = [], itemsNum
-let discoveredrooms = [] // array or rooms player has visited
-let inventory = -1 // place items in players "pockets"
-let gone = -2 // remove items from game
-const MAPWIDTH = 3 // declare size of game
+let tasks = 0 // tracks completed tasks
+let asks = 0 // tracks help requests
+let rooms = [], roomsNum // room array and current room number
+let items = [], itemsNum // item array and current item number
+let discoveredrooms = [] // array of rooms player has visited
+let inventory = -1 // special location value for items in inventory
+let gone = -2 // special location value for removed items
+const MAPWIDTH = 3 // width of game map (3x3 grid)
 
 // =======================
 // INPUT CHECK
 // =======================
+// listen for enter key and process command
 function checkInput(e) {
     if (e.key == "Enter") {
         e.preventDefault()
         command = cli.textContent.trim()
         cli.innerHTML = ""
-        parser(command)
+        parser(command) // send command to parser
     }
 }
 
 // =======================
 // PARSER
 // =======================
+// break down command call appropriate function
 function parser(cmd) {
     let cmdWords = cmd.trim().toUpperCase().split(" ")
-    let verb = cmdWords[0] // first word is the verb
-    var noun = cmdWords.slice(1).join(" ") // rest of it
+    let verb = cmdWords[0] // action
+    var noun = cmdWords.slice(1).join(" ") // target
     switch (verb) {
-        case "NORTH": case "N": // heading north
+        case "NORTH": case "N":
             moveNorth()
             break;
-        case "SOUTH": case "S": // heading SOUTH
+        case "SOUTH": case "S":
             moveSouth()
             break;
-        case "EAST": case "E": // heading EAST
+        case "EAST": case "E":
             moveEast()
             break;
-        case "WEST": case "W": // heading WEST
+        case "WEST": case "W":
             moveWest()
             break;
-        // interactions (self explanitory)
+        // item interactions
         case "GET": case "PICKUP": case "TAKE": case "GRAB": case "GTE":
             get(noun)
             break;
@@ -79,8 +81,7 @@ function parser(cmd) {
         case "BACK": case "LEAVE":
             back()
             break;
-        // default
-        default:
+        default: // default
             intFailSound()
             outputText("Hmmm...")
     }
@@ -92,13 +93,12 @@ function parser(cmd) {
 
 function moveNorth() {
     if (rooms[roomsNum].exits.includes("north")) {
-        roomsNum -= MAPWIDTH; // move up a map row
-        // minimap updates & output info + sound
+        roomsNum -= MAPWIDTH
         discoveredrooms.push(roomsNum);
         showrooms();
         updateMinimap();
         walkSound();
-    } else { // failed interaction
+    } else {
         intFailSound();
         outputText("You can't go that way");
     }
@@ -106,13 +106,12 @@ function moveNorth() {
 
 function moveEast() {
     if (rooms[roomsNum].exits.includes("east")) {
-        roomsNum++ // move RIGHT A COLUMN
-        // minimap updates & output info + sound
+        roomsNum++
         discoveredrooms.push(roomsNum)
         showrooms()
         updateMinimap()
         walkSound()
-    } else { // failed interaction
+    } else {
         intFailSound()
         outputText("You can't go that way")
     }
@@ -120,13 +119,12 @@ function moveEast() {
 
 function moveSouth() {
     if (rooms[roomsNum].exits.includes("south")) {
-        roomsNum += MAPWIDTH // move DOWN a map row
-        // minimap updates & output info + sound
+        roomsNum += MAPWIDTH
         discoveredrooms.push(roomsNum)
         showrooms()
         updateMinimap()
         walkSound()
-    } else { // failed interaction
+    } else {
         intFailSound()
         outputText("You can't go that way")
     }
@@ -134,21 +132,22 @@ function moveSouth() {
 
 function moveWest() {
     if (rooms[roomsNum].exits.includes("west")) {
-        roomsNum-- // move LEFT A COLUMN
-        // minimap updates & output info + sound
+        roomsNum--
         discoveredrooms.push(roomsNum)
         showrooms()
         updateMinimap()
         walkSound()
-    } else { // failed interaction
+    } else {
         intFailSound()
         outputText("You can't go that way")
     }
 }
+
 // =======================
 // PLAYER ACTIONS
 // =======================
 
+// kill santa easter egg
 function kill(noun) {
     if (noun == "SANTA" || noun == "HIM" && roomsNum == 3) {
         outputText("Why...")
@@ -158,14 +157,16 @@ function kill(noun) {
     }
 }
 
+// trigger ending when santa is awakened
 function santa() {
-    output.appendChild(document.createElement("br")); // space
+    output.appendChild(document.createElement("br"));
 
-    // check tasks completed
-    if (items[7].location === inventory) { // Papers
+    // check if all tasks completed
+    if (items[7].location === inventory) {
         tasks++;
     }
 
+    // if enough tasks done, end game
     if (tasks >= 4) {
         outputText("Santa rises slowly from the command chair, his glossy eyes locking onto yours. The air thickens around you, charged with a strange, expectant energy.");
         outputText("His voice, low and otherworldly, whispers: 'Thank you...'");
@@ -175,26 +176,30 @@ function santa() {
             window.location.href = "gameEnd.html";
         }, 10000);
     } else {
+        // not enough tasks, stay in game
         outputText("Santa stirs slightly, his eyes flickering open, but he remains seated, motionless, as if waiting for something more.");
         outputText("A soft rumble passes through the room, the air heavy with anticipation. Perhaps you still have more to do before he truly awakens.");
         john()
         setInterval(function(){
-            output.appendChild(document.createElement("br")); // space
+            output.appendChild(document.createElement("br"));
             outputText("help")
         }, 10000)
     }
 }
 
+// wrap presents to complete a task
 function wrapPresents(noun) {
-    output.appendChild(document.createElement("br")); // space
+    output.appendChild(document.createElement("br"));
     if (noun.toUpperCase() === "TOYS" || noun.toUpperCase() === "PRESENTS") {
+        // check if player has materials
         if (roomsNum === 5 || items[6].location === inventory) {
             var audio = new Audio("/audio/wrapping.mp3");
             audio.play();
             outputText("You set to work, fingers flying over the shifting wrapping paper. The patterns twist and coil, almost playful, as presents come together. One launches from your hands, thudding against a door in the connector.");
-            rooms[4].exits = "north, east, south or west"; // open new exit
+            rooms[4].exits = "north, east, south or west"; // unlock new exit
             invAdd(items[10]);
             tasks++;
+            // remove used items
             for (let item of items) {
                 if ((item.name.toUpperCase() === "TOYS" && item.location === inventory) || (item.name.toUpperCase() === "WRAPPING PAPER" && (item.location === inventory || item.location === 5))) {
                     item.location = gone;
@@ -215,8 +220,9 @@ function wrapPresents(noun) {
 // GAME INITIALISATION
 // =======================
 
+// set up all rooms and items at start
 function initGame() {
-    // rooms
+    // initialize rooms
     rooms[0] = null;
     rooms[1] = {
         name: "Garage",
@@ -249,7 +255,8 @@ function initGame() {
         exits: "north",
         desc: "The front desk area feels frozen in time. Overhead lanterns cast amber light, the air dry and dusty. Papers shuffle subtly on the desk, separating names into neat columns of naughty and nice. A bell rests untouched, yet you could swear it rings under its own volition. The office chair slowly shifts, as if observing you."
     }
-    // items
+    
+    // initialize items
     items[0] = {
         name: "Sleigh",
         desc: "The sleigh's runners hum with a faint, otherworldly resonance. Frost clings unnaturally to the metal, and shadows seem to linger beneath it, shifting just beyond your sight.",
@@ -336,11 +343,14 @@ function initGame() {
         location: gone,
         gettable: true
     };
-    // starting room
+    
+    // start player in front desk room
     roomsNum = 7
-    // init of game
+    // track first room as discovered
     discoveredrooms.push(7)
+    // focus on input field
     cli.focus()
+    // display starting room
     showrooms()
     updateMinimap()
 }
@@ -349,40 +359,40 @@ function initGame() {
 // CREATE GAME ENVIRONMENT
 // =======================
 
+// add text to output display
 function outputText(txt) {
-    // add txt (text btw) to a new paragraph
     let newPara = document.createElement("p")
     newPara.innerHTML = txt
     output.appendChild(newPara)
     newPara.scrollIntoView()
 }
 
+// update minimap display based on discovered rooms
 function updateMinimap() {
-    // get the minimap grid container + clear
     let minimapGrid = document.getElementById("minimap-grid")
     minimapGrid.innerHTML = ""
 
     for (let i = 0; i <= 8; i++) {
-        // create a new square
         let roomsBox = document.createElement("div")
         roomsBox.className = "minimap-rooms"
-        // skip inaccessible rooms
+        // hide inaccessible rooms
         if (i === 0 || i === 6 || i === 8) {
             roomsBox.style.visibility = "hidden"
             minimapGrid.appendChild(roomsBox)
             continue
         }
-        // if the room has been discovered
+        // show discovered rooms
         if (discoveredrooms.includes(i)) {
             roomsBox.innerHTML = rooms[i] ? rooms[i].name : "?"
             roomsBox.style.backgroundColor = "#1a1a1a"
             roomsBox.style.color = "#b0b0b0"
         } else {
-            // if the room has NOT been discovered
+            // show undiscovered rooms as question marks
             roomsBox.innerHTML = "?"
             roomsBox.style.backgroundColor = "#0a0a0a"
             roomsBox.style.color = "#404040"
         }
+        // highlight current room
         if (i === roomsNum) {
             roomsBox.classList.add("current")
         }
@@ -390,24 +400,24 @@ function updateMinimap() {
     }
 }
 
+// display current room info
 function showrooms() {
     outputText("══════════════════")
-    // display room name
     outputText("--- " + rooms[roomsNum].name + " ---")
     outputText("══════════════════")
-    output.appendChild(document.createElement("br")) // space
-    // room description
+    output.appendChild(document.createElement("br"))
+    // show room description
     outputText(rooms[roomsNum].desc)
-    output.appendChild(document.createElement("br")) // space
+    output.appendChild(document.createElement("br"))
     outputText("You can see:")
-    // output name of items
+    // list items in room
     for (itemsNum in items) {
         if (items[itemsNum].location == roomsNum && items[itemsNum].visible == true) {
             outputText(items[itemsNum].name)
         }
     }
-    output.appendChild(document.createElement("br")) // space
-    // say possible exits
+    output.appendChild(document.createElement("br"))
+    // show available exits
     outputText("You can go " + rooms[roomsNum].exits)
 }
 
@@ -415,10 +425,11 @@ function showrooms() {
 // ITEM INTERACTIONS
 // =======================
 
+// throw item to random room
 function chuck(noun) {
-    output.appendChild(document.createElement("br")); // space
-    let room = Math.floor(Math.random(8)) // random number 0-7
-    let found = false; // stop when item name is a match
+    output.appendChild(document.createElement("br"));
+    let room = Math.floor(Math.random(8))
+    let found = false;
     for (let item of items) {
         if (item.name.toUpperCase() === noun && item.location === inventory) {
             var audio = new Audio("/audio/pop.mp3");
@@ -427,6 +438,7 @@ function chuck(noun) {
             invDrop(item);
             outputText("Why would you do that...");
             found = true;
+            // keep item in valid room
             if (item.location == 0 || item.location == 6) {
                 item.location++;
             }
@@ -438,13 +450,14 @@ function chuck(noun) {
     }
 }
 
+// look at item description
 function examine(noun) {
-    output.appendChild(document.createElement("br")); // space
+    output.appendChild(document.createElement("br"));
     let found = false;
     for (let item of items) {
         if (item.name.toUpperCase() === noun.toUpperCase() && (item.location === roomsNum || item.location === inventory)) {
-            output.appendChild(document.createElement("br")); // space
-            outputText(item.desc); // show enhanced description
+            output.appendChild(document.createElement("br"));
+            outputText(item.desc);
             found = true;
         }
     }
@@ -454,8 +467,9 @@ function examine(noun) {
     }
 }
 
+// drop item to current room
 function drop(noun) {
-    output.appendChild(document.createElement("br")); // space
+    output.appendChild(document.createElement("br"));
     let found = false;
     for (let item of items) {
         if (item.name.toUpperCase() === noun && item.location === inventory) {
@@ -473,8 +487,9 @@ function drop(noun) {
     }
 }
 
+// pick up item from current room
 function get(noun) {
-    output.appendChild(document.createElement("br")); // space
+    output.appendChild(document.createElement("br"));
     let found = false;
     for (let item of items) {
         if (item.name.toUpperCase() === noun && item.location === roomsNum && item.gettable === true) {
@@ -493,12 +508,14 @@ function get(noun) {
     }
 }
 
+// ring the bell to wake santa
 function ringBell(noun) {
-    output.appendChild(document.createElement("br")); // space
+    output.appendChild(document.createElement("br"));
     if (noun.toUpperCase() === "BELL" && items[8].location === inventory) {
         outputText("You lift the bell and give it a gentle ring. The sound shimmers through the halls, faint yet commanding. Somewhere in the distance, something stirs, acknowledging your call.");
         var audio = new Audio("/audio/bellSound.mp3");
         audio.play();
+        // if in santa's room, trigger ending
         if (roomsNum === 3) {
             outputText("A figure shifts in the shadows, eyes opening—he wakes up...");
             santa();
@@ -509,15 +526,18 @@ function ringBell(noun) {
     }
 }
 
+// feed oats to reindeer
 function feedReindeer(noun) {
-    output.appendChild(document.createElement("br")); // space
+    output.appendChild(document.createElement("br"));
     if (noun.toUpperCase() === "REINDEER") {
+        // only works in garage
         if (roomsNum === 1) {
             if (items[5].location === inventory) {
                 var audio = new Audio("/audio/eating.mp3");
                 audio.play();
                 outputText("The reindeer sniff the oats, their breath visible in the cold air. Slowly, they snatch them from your hands, their glassy eyes glimmering with a strange satisfaction. A soft, low rumble echoes from the connector, as if the building itself is acknowledging your offering.");
                 items[5].used = true;
+                // remove oats from inventory
                 for (let item of items) {
                     if (item.name.toUpperCase() === "OATS" && item.location === inventory) {
                         item.location = gone;
@@ -539,15 +559,19 @@ function feedReindeer(noun) {
     }
 }
 
+// put harness on reindeer
 function harness(noun) {
-    output.appendChild(document.createElement("br")); // space
+    output.appendChild(document.createElement("br"));
     if (noun.toUpperCase() === "REINDEER") {
+        // only works in garage
         if (roomsNum === 1) {
             if (items[1].location === inventory) {
+                // reindeer must be fed first
                 if (items[5].used === true) {
                     var audio = new Audio("/audio/harness.mp3");
                     audio.play();
                     outputText("Cold to the touch, the reindeer's skeletal form slides into the harness, surprisingly compliant. A deep rumble rises from their chest as if approving your efforts. The room feels alive with a tension you can almost hear.");
+                    // remove harness from inventory
                     for (let item of items) {
                         if (item.name.toUpperCase() === "HARNESS" && item.location === inventory) {
                             item.location = gone;
@@ -577,24 +601,27 @@ function harness(noun) {
 // INVENTORY
 // =======================
 
+// add item to inventory display
 function invAdd(item) {
     let itemsContainer = document.getElementById("items-container")
     let para = document.createElement("p")
     para.classList.add("item")
     para.textContent = item.name
     itemsContainer.appendChild(para)
+    // click item to examine it
     para.onclick = function () {
         examine(item.name)
     };
 }
 
+// remove item from inventory display
 function invDrop(item) {
     let itemsContainer = document.getElementById("items-container");
     let itemElements = itemsContainer.getElementsByClassName("item");
     for (let element of itemElements) {
         if (element.textContent == item.name) {
             element.remove();
-            break; // stop after removing one match
+            break;
         }
     }
 }
@@ -603,10 +630,12 @@ function invDrop(item) {
 // MISC
 // =======================
 
+// show help menu
 function help(noun) {
-    output.appendChild(document.createElement("br")); // space
+    output.appendChild(document.createElement("br"));
     asks++;
     if (noun.toUpperCase() === "PLEASE") {
+        // show full help menu
         outputText("The world seems to lean in, listening carefully. Here is what you can do:");
         outputText("Movement:");
         outputText("North (n), South (s), East (e), West (w)");
@@ -626,17 +655,20 @@ function help(noun) {
         outputText("Exit:")
         outputText("Back or leave")
     } else if (asks >= 3 && noun.toUpperCase() !== "PLEASE") {
+        // complain if asked too many times
         outputText("A faint whisper echoes in the room: 'Are you seriously going to keep asking that?'");
     } else {
+        // hint to ask nicely
         outputText("The room waits patiently. Perhaps ask nicely.");
     }
 }
 
+// exit game
 function back() {
     if (confirm("Are you sure you want to leave... he won't be happy.")) {
         window.location.href = "index.html";
     } else {
-        output.appendChild(document.createElement("br")); // space
+        output.appendChild(document.createElement("br"));
         outputText("Good choice...");
     }
 }
@@ -645,31 +677,35 @@ function back() {
 // SOUNDS
 // =======================
 
+// enable music when user interacts with page
 function enableMenuMusic() {
     let music = document.getElementById("menuMusic");
     function unlockAudio() {
         music.muted = false;
         music.volume = 0.3
         music.play();
-        // remove listeners
+        // remove event listeners
         document.removeEventListener("keydown", unlockAudio);
         document.removeEventListener("click", unlockAudio);
     }
-    // start audio
+    // wait for user interaction to play music
     document.addEventListener("keydown", unlockAudio, { once: true });
     document.addEventListener("click", unlockAudio, { once: true });
 }
 
+// play failure sound
 function intFailSound() {
     var audio = new Audio("/audio/failInt.mp3");
     audio.play();
 }
 
+// play walking sound
 function walkSound() {
     var audio = new Audio("/audio/walk.mp3");
     audio.play();
 }
 
+// play pop sound
 function pop() {
     var audio = new Audio("/audio/pop.mp3");
     audio.play
@@ -681,19 +717,20 @@ function pop() {
 
 let johnInterval = null;
 
+// play random video every 10 seconds
 function john() {
-    if (johnInterval) return;
+    if (johnInterval) return; // only start once
 
     johnInterval = setInterval(function () {
 
-        // create video
+        // create video element
         let vid = document.createElement("video");
         vid.id = "johnVideo";
         vid.autoplay = true;
         vid.muted = false;
         vid.playsInline = true;
 
-        // video source
+        // set video source
         let src = document.createElement("source");
         src.src = "/video/johnvid.mp4";
         src.type = "video/mp4";
@@ -701,10 +738,10 @@ function john() {
         vid.appendChild(src);
         document.body.appendChild(vid);
 
-        // remove after 1 second
+        // remove video after 1 second
         setTimeout(function () {
             vid.remove();
         }, 1000);
 
-    }, 10000);
+    }, 10000); // repeat every 10 seconds
 }

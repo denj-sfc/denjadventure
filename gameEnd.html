@@ -8,23 +8,23 @@
     <script src="/scripts/menuScript.js"></script>
 </head>
 
-<!-- sick audio -->
-<audio id="menuMusic" src="/audio/menuMusic.mp3" loop muted autoplay></audio>
-
 <body id="body" onload="enableMenuMusic();">
+    <!-- sick audio -->
+    <audio id="menuMusic" src="/audio/menuMusic.mp3" loop muted autoplay></audio>
+
     <div class="menu">
         <!-- title -->
         <h2>Thank you for playing:</h2>
         <h1>SLEEPING SNOW</h1>
+
         <!-- subtitle -->
         <div class="subtitle">A Text-Based Horror at the North Pole</div>
+
         <!-- buttons -->
-        <!-- start button -->
         <button onclick="startGame()">Again?</button>
-        <!-- options button (does not work) -->
         <button onclick="menu()">Back to menu</button>
-        <!-- exit game button (closes window) -->
         <button onclick="quitGame()">Quit</button>
+
         <!-- footer splash (update!!!) -->
         <div class="footer">The ice was empty.</div>
     </div>
