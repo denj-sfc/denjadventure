@@ -72,7 +72,7 @@ function parser(cmd) {
         case "THROW": case "CHUCK":
             chuck(noun)
             break;
-        case "HIT": case "ATTACK": case "KILL":
+        case "HIT": case "ATTACK": case "KILL": case "SLAY": case "STAB":
             kill(noun)
             break;
         case "HELP":
@@ -149,11 +149,15 @@ function moveWest() {
 
 // kill santa easter egg
 function kill(noun) {
-    if (noun == "SANTA" || noun == "HIM" && roomsNum == 3) {
-        outputText("Why...")
-        setTimeout(function () {
-            outputText("Well done.")
-        }, 2000)
+    output.appendChild(document.createElement("br"));
+    if (noun.toUpperCase() === "SANTA" && roomsNum === 3 && items[11].location === inventory) {
+        outputText("You lunge at Santa with the knife, but as you strike, he vanishes into a swirl of shadows and cold air. A chilling laughter echoes around you, and you feel an icy grip on your soul. The room fades to black, and you realize some forces are beyond your control.");
+        setTimeout(function() {
+            window.location.href = "gameEnd.html";
+        }, 5000);
+    } else {
+        intFailSound();
+        outputText("Violence isn't the answer here.");
     }
 }
 
@@ -374,6 +378,14 @@ function initGame() {
         desc: "Toys wrapped in animated paper that hums softly from the inside. The paper seems to pulse lightly, almost breathing, suggesting the contents are more than ordinary gifts.",
         location: gone,
         gettable: true
+    };
+
+    items[11] = {
+        name: "Knife",
+        desc: "A sharp blade with a handle worn smooth by use. The edge glints unnaturally, reflecting light in a way that suggests it has seen far more than simple cutting tasks.",
+        location: 0,
+        gettable: true,
+        visible: true
     };
     
     // start player in front desk room
