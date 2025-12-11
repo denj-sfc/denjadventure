@@ -131,7 +131,7 @@ function moveSouth() {
 }
 
 function moveWest() {
-    if (rooms[roomsNum].exits.includes("west")) {
+    if (rooms[roomsNum].exits.includes("west") || rooms[roomsNum].hiddenExits.includes("west")) {
         roomsNum--
         discoveredrooms.push(roomsNum)
         showrooms()
@@ -250,10 +250,15 @@ function wrapPresents(noun) {
 // set up all rooms and items at start
 function initGame() {
     // initialize rooms
-    rooms[0] = null;
+    rooms[0] = {
+        name: "Basement",
+        exits: "east or south",
+        desc: "The air is thick and metallic, heavy with the stench of old blood that never fully dried. Rusted chains hang from the rafters like frozen icicles, each one ending in a hook sharpened far beyond necessity. Splintered wooden toys—tiny trains, dolls with missing eyes, stuffed animals torn open—lie scattered across the floor, all soaked in the same dark stains. On the far wall, a massive workbench is lit by a single flickering bulb, illuminating blades arranged with obsessive care, each tagged with a child's name in trembling red ink. Deep gouges in the stone floor show where something… or someone… tried to crawl away. A Santa hat lies in the corner, its fluffy trim matted and brown. You can still hear it—faint, muffled—like someone choking on a carol they never wanted to sing.",
+    };
     rooms[1] = {
         name: "Garage",
         exits: "east or south",
+        hiddenExits: "west",
         desc: "The garage stretches beyond reason, its ceiling vanishing into shadow. Cold drafts curl along the walls like ghostly fingers, brushing against your skin. The sleigh dominates the center, its metal runners humming softly, as if recalling journeys it should never have taken. In the stalls, the reindeer stand statuesque—their glassy eyes flicker whenever you look away, hinting at a quiet awareness."
     };
     rooms[2] = {
