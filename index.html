@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sleeping Snow - Menu</title>
+    <link href="/styles/menuStyle.css" rel="stylesheet" type="text/css">
+    <script src="/scripts/menuScript.js" defer></script>
+</head>
+
+<body id="body" onload="enableMenuMusic(); loadVolume();">
+
+    <!-- sick audio -->
+    <audio id="menuMusic" src="/audio/menuMusic.mp3" loop muted autoplay></audio>
+
+    <div class="menu">
+        <h1>SLEEPING SNOW</h1>
+        <div class="subtitle">A Text-Based Horror at the North Pole</div>
+
+        <button onclick="startGame()">Start Game</button>
+        <button onclick="showOptions()">Options</button>
+        <button onclick="quitGame()">Quit</button>
+
+        <div class="footer">The ice is not empty.</div>
+    </div>
+
+    <!-- OPTIONS PANEL -->
+    <div id="optionsPanel" class="options hidden">
+        <h2>Options</h2>
+
+        <label>
+            Music Volume
+            <input
+                type="range"
+                id="volumeSlider"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.7"
+                oninput="setVolume(this.value)">
+        </label>
+
+        <div class="options-buttons">
+            <button onclick="closeOptions()">Back</button>
+        </div>
+    </div>
+
+</body>
+</html>

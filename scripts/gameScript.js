@@ -1,0 +1,710 @@
+//work on santa()
+
+// declare variables
+let tasks = 0
+let asks = 0
+let rooms = [], roomsNum
+let items = [], itemsNum
+let discoveredrooms = [] // array or rooms player has visited
+let inventory = -1 // place items in players "pockets"
+let gone = -2 // remove items from game
+const MAPWIDTH = 3 // declare size of game
+
+// =======================
+// INPUT CHECK
+// =======================
+function checkInput(e) {
+    if (e.key == "Enter") {
+        e.preventDefault()
+        command = cli.textContent.trim()
+        cli.innerHTML = ""
+        parser(command)
+    }
+}
+
+// =======================
+// PARSER
+// =======================
+function parser(cmd) {
+    let cmdWords = cmd.trim().toUpperCase().split(" ")
+    let verb = cmdWords[0] // first word is the verb
+    var noun = cmdWords.slice(1).join(" ") // rest of it
+    switch (verb) {
+        case "NORTH": case "N": // heading north
+            moveNorth()
+            break;
+        case "SOUTH": case "S": // heading SOUTH
+            moveSouth()
+            break;
+        case "EAST": case "E": // heading EAST
+            moveEast()
+            break;
+        case "WEST": case "W": // heading WEST
+            moveWest()
+            break;
+        // interactions (self explanitory)
+        case "GET": case "PICKUP": case "TAKE": case "GRAB": case "GTE":
+            get(noun)
+            break;
+        case "DROP": case "REMOVE":
+            drop(noun)
+            break;
+        case "EXAMINE": case "EX": case "X":
+            examine(noun)
+            break;
+        case "SLEEP":
+            john()
+            break;
+        case "FEED":
+            feedReindeer(noun)
+            break;
+        case "RING":
+            ringBell(noun)
+            break;
+        case "WRAP":
+            wrapPresents(noun)
+            break;
+        case "HARNESS": case "HITCH": case "HITCHUP":
+            harness(noun)
+            break;
+        case "THROW": case "CHUCK":
+            chuck(noun)
+            break;
+        case "HIT": case "ATTACK": case "KILL":
+            kill(noun)
+            break;
+        case "HELP":
+            help(noun)
+            break;
+        case "BACK": case "LEAVE":
+            back()
+            break;
+        // default
+        default:
+            intFailSound()
+            outputText("Hmmm...")
+    }
+}
+
+// =======================
+// MOVEMENT
+// =======================
+
+function moveNorth() {
+    if (rooms[roomsNum].exits.includes("north")) {
+        roomsNum -= MAPWIDTH; // move up a map row
+        // minimap updates & output info + sound
+        discoveredrooms.push(roomsNum);
+        showrooms();
+        updateMinimap();
+        walkSound();
+    } else { // failed interaction
+        intFailSound();
+        outputText("You can't go that way");
+    }
+}
+
+function moveEast() {
+    if (rooms[roomsNum].exits.includes("east")) {
+        roomsNum++ // move RIGHT A COLUMN
+        // minimap updates & output info + sound
+        discoveredrooms.push(roomsNum)
+        showrooms()
+        updateMinimap()
+        walkSound()
+    } else { // failed interaction
+        intFailSound()
+        outputText("You can't go that way")
+    }
+}
+
+function moveSouth() {
+    if (rooms[roomsNum].exits.includes("south")) {
+        roomsNum += MAPWIDTH // move DOWN a map row
+        // minimap updates & output info + sound
+        discoveredrooms.push(roomsNum)
+        showrooms()
+        updateMinimap()
+        walkSound()
+    } else { // failed interaction
+        intFailSound()
+        outputText("You can't go that way")
+    }
+}
+
+function moveWest() {
+    if (rooms[roomsNum].exits.includes("west")) {
+        roomsNum-- // move LEFT A COLUMN
+        // minimap updates & output info + sound
+        discoveredrooms.push(roomsNum)
+        showrooms()
+        updateMinimap()
+        walkSound()
+    } else { // failed interaction
+        intFailSound()
+        outputText("You can't go that way")
+    }
+}
+// =======================
+// PLAYER ACTIONS
+// =======================
+
+function kill(noun) {
+    if (noun == "SANTA" || noun == "HIM" && roomsNum == 3) {
+        outputText("Why...")
+        setTimeout(function () {
+            outputText("Well done.")
+        }, 2000)
+    }
+}
+
+function santa() {
+    output.appendChild(document.createElement("br")); // space
+
+    // check tasks completed
+    if (items[7].location === inventory) { // Papers
+        tasks++;
+    }
+
+    if (tasks >= 4) {
+        outputText("Santa rises slowly from the command chair, his glossy eyes locking onto yours. The air thickens around you, charged with a strange, expectant energy.");
+        outputText("His voice, low and otherworldly, whispers: 'Thank you...'");
+        outputText("The room trembles violently, walls cracking and dust falling like fine snow. Light pours in through every new fracture, bathing the space in a blinding, surreal glow.");
+        outputText("Suddenly, the surroundings dissolve, leaving only a white void stretching endlessly in all directions. Your task is complete, yet a lingering unease fills the emptiness.");
+        setTimeout(function () {
+            window.location.href = "gameEnd.html";
+        }, 10000);
+    } else {
+        outputText("Santa stirs slightly, his eyes flickering open, but he remains seated, motionless, as if waiting for something more.");
+        outputText("A soft rumble passes through the room, the air heavy with anticipation. Perhaps you still have more to do before he truly awakens.");
+        john()
+        setInterval(function(){
+            output.appendChild(document.createElement("br")); // space
+            outputText("help")
+        }, 10000)
+    }
+}
+
+function wrapPresents(noun) {
+    output.appendChild(document.createElement("br")); // space
+    if (noun.toUpperCase() === "TOYS" || noun.toUpperCase() === "PRESENTS") {
+        if (roomsNum === 5 || items[6].location === inventory) {
+            var audio = new Audio("/audio/wrapping.mp3");
+            audio.play();
+            outputText("You set to work, fingers flying over the shifting wrapping paper. The patterns twist and coil, almost playful, as presents come together. One launches from your hands, thudding against a door in the connector.");
+            rooms[4].exits = "north, east, south or west"; // open new exit
+            invAdd(items[10]);
+            tasks++;
+            for (let item of items) {
+                if ((item.name.toUpperCase() === "TOYS" && item.location === inventory) || (item.name.toUpperCase() === "WRAPPING PAPER" && (item.location === inventory || item.location === 5))) {
+                    item.location = gone;
+                    invDrop(item);
+                }
+            }
+        } else {
+            intFailSound();
+            outputText("You lack the materials to wrap anything. The paper and toys remain stubbornly out of reach.");
+        }
+    } else {
+        intFailSound();
+        outputText("You attempt to wrap " + noun.toLowerCase() + ", but it resists your efforts. Perhaps stick to toys and presents.");
+    }
+}
+
+// =======================
+// GAME INITIALISATION
+// =======================
+
+function initGame() {
+    // rooms
+    rooms[0] = null;
+    rooms[1] = {
+        name: "Garage",
+        exits: "east or south",
+        desc: "The garage stretches beyond reason, its ceiling vanishing into shadow. Cold drafts curl along the walls like ghostly fingers, brushing against your skin. The sleigh dominates the center, its metal runners humming softly, as if recalling journeys it should never have taken. In the stalls, the reindeer stand statuesque—their glassy eyes flicker whenever you look away, hinting at a quiet awareness."
+    };
+    rooms[2] = {
+        name: "Workshop",
+        exits: "south",
+        desc: "The workshop smells of old varnish and cold metal. Long wooden tables stretch into dimness, cluttered with tools that glint strangely. A fine dust floats lazily, drifting against the air currents instead of with them. Half-finished toys sit unnaturally still, their painted eyes catching light that seems not to exist. A conveyor belt moves sporadically, as though following its own secret rhythm."
+    };
+    rooms[3] = {
+        name: "Santa's HQ",
+        exits: "east",
+        desc: "The command room hums with low electrical static that pricks along your arms. Walls are lined with flickering screens showing distorted maps and unreadable codes. A red carpet feels plush yet unnervingly cold. In the massive chair sits a figure motionless, but faint rustles hint at imperceptible movement. Occasionally, the screens flash bright red—a silent warning you can't quite decipher."
+    };
+    rooms[4] = {
+        name: "Connector",
+        exits: "east, south or west",
+        desc: "A narrow corridor stretches like a spine, its walls too close and lighting unreliable. Each flickering bulb creates illusions of movement ahead or behind you. The floorboards creak underfoot in hollow, uneven tones. Scattered oats lie in precise patterns, some shifting slightly as if nudged by unseen fingers."
+    };
+    rooms[5] = {
+        name: "Wrapping Station",
+        exits: "north or west",
+        desc: "The wrapping station is a maze of paper rolls and half-finished packages. Fluorescent lights cast a sickly glow, highlighting shifting wrapping patterns. Paper draped over chairs moves slightly, as if breathing. A roll on the floor rustles toward a table leg like a patient serpent. A distant tapping echoes through the room, rhythmic but inexplicable."
+    };
+    rooms[6] = null;
+    rooms[7] = {
+        name: "Front Desk",
+        exits: "north",
+        desc: "The front desk area feels frozen in time. Overhead lanterns cast amber light, the air dry and dusty. Papers shuffle subtly on the desk, separating names into neat columns of naughty and nice. A bell rests untouched, yet you could swear it rings under its own volition. The office chair slowly shifts, as if observing you."
+    }
+    // items
+    items[0] = {
+        name: "Sleigh",
+        desc: "The sleigh's runners hum with a faint, otherworldly resonance. Frost clings unnaturally to the metal, and shadows seem to linger beneath it, shifting just beyond your sight.",
+        location: 1,
+        gettable: false,
+        visible: true
+    };
+
+    items[1] = {
+        name: "Harness",
+        desc: "The leather straps twitch almost imperceptibly when unobserved, as if eager to be worn. The buckles feel unnervingly cold, sending a shiver down your spine when touched.",
+        location: 1,
+        gettable: true,
+        visible: true
+    };
+
+    items[2] = {
+        name: "Reindeer",
+        desc: "Their glassy eyes never blink, yet seem to follow every subtle movement you make. Their breathing is shallow, almost ghostly, and each soft exhale smells faintly of pine and cold metal.",
+        location: 1,
+        gettable: false,
+        visible: true
+    };
+
+    items[3] = {
+        name: "Toys",
+        desc: "Each toy smiles differently, none in a way that feels natural. Some eyes glint too sharply, others tilt their heads unnaturally. A faint mechanical whir suggests they are aware of your presence.",
+        location: 2,
+        gettable: true,
+        visible: true
+    };
+
+    items[4] = {
+        name: "Santa",
+        desc: "The suit appears full and lifelike, yet no rise or fall of breath breaks the eerie stillness. His eyes, when caught in the corner of your vision, seem to glimmer faintly with consciousness.",
+        location: 3,
+        gettable: false,
+        visible: true
+    };
+
+    items[5] = {
+        name: "Oats",
+        desc: "The oats are scattered in patterns too precise to be accidental, almost like an arcane message. A faint warmth radiates from them, as if aware of hands that reach for them.",
+        location: 4,
+        gettable: true,
+        visible: true,
+        used: false
+    };
+
+    items[6] = {
+        name: "Wrapping Paper",
+        desc: "The paper's surface seems to ripple subtly when you blink. Snowflakes twist and coil into unfamiliar shapes, giving the sense that the sheets themselves are alive and observing you.",
+        location: 5,
+        gettable: true,
+        visible: true
+    };
+
+    items[7] = {
+        name: "Papers",
+        desc: "The pages shuffle on their own, names smudging and shifting as if reconsidering their judgements. Some columns appear to whisper faintly when looked at too closely.",
+        location: 7,
+        gettable: true,
+        visible: true
+    };
+
+    items[8] = {
+        name: "Bell",
+        desc: "A tiny silver bell that rings without being touched. The tone reverberates farther than it should, and the faintest shadow seems to move in response.",
+        location: 7,
+        gettable: true,
+        visible: true
+    };
+
+    items[9] = {
+        name: "Candy Cane",
+        desc: "A striped cane that's unusually light. A soft tapping seems to echo from within, as though something inside is waiting for you to pay attention.",
+        location: 5,
+        gettable: false
+    };
+
+    items[10] = {
+        name: "Wrapped Presents",
+        desc: "Toys wrapped in animated paper that hums softly from the inside. The paper seems to pulse lightly, almost breathing, suggesting the contents are more than ordinary gifts.",
+        location: gone,
+        gettable: true
+    };
+    // starting room
+    roomsNum = 7
+    // init of game
+    discoveredrooms.push(7)
+    cli.focus()
+    showrooms()
+    updateMinimap()
+}
+
+// =======================
+// CREATE GAME ENVIRONMENT
+// =======================
+
+function outputText(txt) {
+    // add txt (text btw) to a new paragraph
+    let newPara = document.createElement("p")
+    newPara.innerHTML = txt
+    output.appendChild(newPara)
+    newPara.scrollIntoView()
+}
+
+function updateMinimap() {
+    // get the minimap grid container + clear
+    let minimapGrid = document.getElementById("minimap-grid")
+    minimapGrid.innerHTML = ""
+
+    for (let i = 0; i <= 8; i++) {
+        // create a new square
+        let roomsBox = document.createElement("div")
+        roomsBox.className = "minimap-rooms"
+        // skip inaccessible rooms
+        if (i === 0 || i === 6 || i === 8) {
+            roomsBox.style.visibility = "hidden"
+            minimapGrid.appendChild(roomsBox)
+            continue
+        }
+        // if the room has been discovered
+        if (discoveredrooms.includes(i)) {
+            roomsBox.innerHTML = rooms[i] ? rooms[i].name : "?"
+            roomsBox.style.backgroundColor = "#1a1a1a"
+            roomsBox.style.color = "#b0b0b0"
+        } else {
+            // if the room has NOT been discovered
+            roomsBox.innerHTML = "?"
+            roomsBox.style.backgroundColor = "#0a0a0a"
+            roomsBox.style.color = "#404040"
+        }
+        if (i === roomsNum) {
+            roomsBox.classList.add("current")
+        }
+        minimapGrid.appendChild(roomsBox)
+    }
+}
+
+function showrooms() {
+    outputText("══════════════════")
+    // display room name
+    outputText("--- " + rooms[roomsNum].name + " ---")
+    outputText("══════════════════")
+    output.appendChild(document.createElement("br")) // space
+    // room description
+    outputText(rooms[roomsNum].desc)
+    output.appendChild(document.createElement("br")) // space
+    outputText("You can see:")
+    // output name of items
+    for (itemsNum in items) {
+        if (items[itemsNum].location == roomsNum && items[itemsNum].visible == true) {
+            outputText(items[itemsNum].name)
+        }
+    }
+    output.appendChild(document.createElement("br")) // space
+    // say possible exits
+    outputText("You can go " + rooms[roomsNum].exits)
+}
+
+// =======================
+// ITEM INTERACTIONS
+// =======================
+
+function chuck(noun) {
+    output.appendChild(document.createElement("br")); // space
+    let room = Math.floor(Math.random(8)) // random number 0-7
+    let found = false; // stop when item name is a match
+    for (let item of items) {
+        if (item.name.toUpperCase() === noun && item.location === inventory) {
+            var audio = new Audio("/audio/pop.mp3");
+            audio.play();
+            item.location = room;
+            invDrop(item);
+            outputText("Why would you do that...");
+            found = true;
+            if (item.location == 0 || item.location == 6) {
+                item.location++;
+            }
+        }
+    }
+    if (!found) {
+        intFailSound();
+        outputText("You don't have " + noun.toLowerCase());
+    }
+}
+
+function examine(noun) {
+    output.appendChild(document.createElement("br")); // space
+    let found = false;
+    for (let item of items) {
+        if (item.name.toUpperCase() === noun.toUpperCase() && (item.location === roomsNum || item.location === inventory)) {
+            output.appendChild(document.createElement("br")); // space
+            outputText(item.desc); // show enhanced description
+            found = true;
+        }
+    }
+    if (!found) {
+        intFailSound();
+        outputText("You peer around, but " + noun.toLowerCase() + " refuses to reveal itself");
+    }
+}
+
+function drop(noun) {
+    output.appendChild(document.createElement("br")); // space
+    let found = false;
+    for (let item of items) {
+        if (item.name.toUpperCase() === noun && item.location === inventory) {
+            var audio = new Audio("/audio/pop.mp3");
+            audio.play();
+            item.location = roomsNum;
+            invDrop(item);
+            outputText("You place " + item.name.toLowerCase() + " on the ground.");
+            found = true;
+        }
+    }
+    if (!found) {
+        intFailSound();
+        outputText("You don't have " + noun.toLowerCase());
+    }
+}
+
+function get(noun) {
+    output.appendChild(document.createElement("br")); // space
+    let found = false;
+    for (let item of items) {
+        if (item.name.toUpperCase() === noun && item.location === roomsNum && item.gettable === true) {
+            var audio = new Audio("/audio/pop.mp3");
+            audio.play();
+            item.location = inventory;
+            invAdd(item);
+            outputText("You pick up " + item.name.toLowerCase());
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        intFailSound();
+        outputText("You can't see " + noun.toLowerCase() + ". Perhaps it hides from you.");
+    }
+}
+
+function ringBell(noun) {
+    output.appendChild(document.createElement("br")); // space
+    if (noun.toUpperCase() === "BELL" && items[8].location === inventory) {
+        outputText("You lift the bell and give it a gentle ring. The sound shimmers through the halls, faint yet commanding. Somewhere in the distance, something stirs, acknowledging your call.");
+        var audio = new Audio("/audio/bellSound.mp3");
+        audio.play();
+        if (roomsNum === 3) {
+            outputText("A figure shifts in the shadows, eyes opening—he wakes up...");
+            santa();
+        }
+    } else {
+        intFailSound();
+        outputText("You fumble with an invisible bell. The air remains unbroken, silent, and disapproving.");
+    }
+}
+
+function feedReindeer(noun) {
+    output.appendChild(document.createElement("br")); // space
+    if (noun.toUpperCase() === "REINDEER") {
+        if (roomsNum === 1) {
+            if (items[5].location === inventory) {
+                var audio = new Audio("/audio/eating.mp3");
+                audio.play();
+                outputText("The reindeer sniff the oats, their breath visible in the cold air. Slowly, they snatch them from your hands, their glassy eyes glimmering with a strange satisfaction. A soft, low rumble echoes from the connector, as if the building itself is acknowledging your offering.");
+                items[5].used = true;
+                for (let item of items) {
+                    if (item.name.toUpperCase() === "OATS" && item.location === inventory) {
+                        item.location = gone;
+                        invDrop(item);
+                        tasks++;
+                    }
+                }
+            } else {
+                intFailSound();
+                outputText("You fumble around, but you have no oats to offer. The reindeer stare, unimpressed.");
+            }
+        } else {
+            intFailSound();
+            outputText("There aren't any reindeer here, only shadows that seem to shift when you blink.");
+        }
+    } else {
+        intFailSound();
+        outputText("You can't feed " + noun.toLowerCase());
+    }
+}
+
+function harness(noun) {
+    output.appendChild(document.createElement("br")); // space
+    if (noun.toUpperCase() === "REINDEER") {
+        if (roomsNum === 1) {
+            if (items[1].location === inventory) {
+                if (items[5].used === true) {
+                    var audio = new Audio("/audio/harness.mp3");
+                    audio.play();
+                    outputText("Cold to the touch, the reindeer's skeletal form slides into the harness, surprisingly compliant. A deep rumble rises from their chest as if approving your efforts. The room feels alive with a tension you can almost hear.");
+                    for (let item of items) {
+                        if (item.name.toUpperCase() === "HARNESS" && item.location === inventory) {
+                            item.location = gone;
+                            invDrop(item);
+                            tasks++;
+                        }
+                    }
+                } else {
+                    intFailSound();
+                    outputText("The reindeer snap and gnash, revealing rows of sharp teeth. Perhaps they need to be fed first.");
+                }
+            } else {
+                intFailSound();
+                outputText("You reach for a harness that isn't here. The cold leather is missing from your grasp.");
+            }
+        } else {
+            intFailSound();
+            outputText("There aren't any reindeer here, only empty stalls and faint echoes.");
+        }
+    } else {
+        intFailSound();
+        outputText("You can't harness " + noun.toLowerCase());
+    }
+}
+
+// =======================
+// INVENTORY
+// =======================
+
+function invAdd(item) {
+    let itemsContainer = document.getElementById("items-container")
+    let para = document.createElement("p")
+    para.classList.add("item")
+    para.textContent = item.name
+    itemsContainer.appendChild(para)
+    para.onclick = function () {
+        examine(item.name)
+    };
+}
+
+function invDrop(item) {
+    let itemsContainer = document.getElementById("items-container");
+    let itemElements = itemsContainer.getElementsByClassName("item");
+    for (let element of itemElements) {
+        if (element.textContent == item.name) {
+            element.remove();
+            break; // stop after removing one match
+        }
+    }
+}
+
+// =======================
+// MISC
+// =======================
+
+function help(noun) {
+    output.appendChild(document.createElement("br")); // space
+    asks++;
+    if (noun.toUpperCase() === "PLEASE") {
+        outputText("The world seems to lean in, listening carefully. Here is what you can do:");
+        outputText("Movement:");
+        outputText("North (n), South (s), East (e), West (w)");
+        outputText("===");
+        outputText("Pick up items:");
+        outputText("Pickup, get, grab, take");
+        outputText("===");
+        outputText("Drop items:");
+        outputText("Drop, remove, chuck");
+        outputText("===");
+        outputText("Examine items:");
+        outputText("Examine, inspect, x");
+        outputText("===");
+        outputText("Other (item-specific / unique actions):");
+        outputText("Feed, ring, wrap, hitch, harness, sleep");
+        outputText("===");
+        outputText("Exit:")
+        outputText("Back or leave")
+    } else if (asks >= 3 && noun.toUpperCase() !== "PLEASE") {
+        outputText("A faint whisper echoes in the room: 'Are you seriously going to keep asking that?'");
+    } else {
+        outputText("The room waits patiently. Perhaps ask nicely.");
+    }
+}
+
+function back() {
+    if (confirm("Are you sure you want to leave... he won't be happy.")) {
+        window.location.href = "index.html";
+    } else {
+        output.appendChild(document.createElement("br")); // space
+        outputText("Good choice...");
+    }
+}
+
+// =======================
+// SOUNDS
+// =======================
+
+function enableMenuMusic() {
+    let music = document.getElementById("menuMusic");
+    function unlockAudio() {
+        music.muted = false;
+        music.volume = 0.3
+        music.play();
+        // remove listeners
+        document.removeEventListener("keydown", unlockAudio);
+        document.removeEventListener("click", unlockAudio);
+    }
+    // start audio
+    document.addEventListener("keydown", unlockAudio, { once: true });
+    document.addEventListener("click", unlockAudio, { once: true });
+}
+
+function intFailSound() {
+    var audio = new Audio("/audio/failInt.mp3");
+    audio.play();
+}
+
+function walkSound() {
+    var audio = new Audio("/audio/walk.mp3");
+    audio.play();
+}
+
+function pop() {
+    var audio = new Audio("/audio/pop.mp3");
+    audio.play
+}
+
+// =======================
+// VIDEOS
+// =======================
+
+let johnInterval = null;
+
+function john() {
+    if (johnInterval) return;
+
+    johnInterval = setInterval(function () {
+
+        // create video
+        let vid = document.createElement("video");
+        vid.id = "johnVideo";
+        vid.autoplay = true;
+        vid.muted = false;
+        vid.playsInline = true;
+
+        // video source
+        let src = document.createElement("source");
+        src.src = "/video/johnvid.mp4";
+        src.type = "video/mp4";
+
+        vid.appendChild(src);
+        document.body.appendChild(vid);
+
+        // remove after 1 second
+        setTimeout(function () {
+            vid.remove();
+        }, 1000);
+
+    }, 10000);
+}
