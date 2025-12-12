@@ -1,14 +1,16 @@
-//work on santa()
+//work on eat()
 
 // declare variables
-let tasks = 0 // tracks completed tasks
-let asks = 0 // tracks help requests
+let tasks = 0 // completed tasks
+let asks = 0 // help requests
 let rooms = [], roomsNum // room array and current room number
 let items = [], itemsNum // item array and current item number
 let discoveredrooms = [] // array of rooms player has visited
-let inventory = -1 // special location value for items in inventory
-let gone = -2 // special location value for removed items
-const MAPWIDTH = 3 // width of game map (3x3 grid)
+let inventory = -1 // location for items in inventory
+let gone = -2 // location for removed items
+let box = -3 // location for items in box
+let boxOpen = false
+const MAPWIDTH = 3 // width of map (3x3 grid)
 
 // =======================
 // INPUT CHECK
@@ -75,6 +77,12 @@ function parser(cmd) {
         case "HIT": case "ATTACK": case "KILL": case "SLAY": case "STAB":
             kill(noun)
             break;
+        case "OPEN": case "LOOK":
+            openBox(noun)
+            break;
+        case "EAT": case "DEVOUR": case "INGEST":
+            eat(noun)
+            break;
         case "HELP":
             help(noun)
             break;
@@ -92,7 +100,7 @@ function parser(cmd) {
 // =======================
 
 function moveNorth() {
-    if (rooms[roomsNum].exits.includes("north")) {
+    if (rooms[roomsNum].exits.includes("north") || rooms[roomsNum].hiddenExits.includes("north")) {
         roomsNum -= MAPWIDTH
         discoveredrooms.push(roomsNum);
         showrooms();
@@ -152,7 +160,7 @@ function kill(noun) {
     output.appendChild(document.createElement("br"));
     if (noun.toUpperCase() === "SANTA" && roomsNum === 3 && items[11].location === inventory) {
         outputText("You lunge at Santa with the knife, but as you strike, he vanishes into a swirl of shadows and cold air. A chilling laughter echoes around you, and you feel an icy grip on your soul. The room fades to black, and you realize some forces are beyond your control.");
-        setTimeout(function() {
+        setTimeout(function () {
             window.location.href = "gameEnd.html";
         }, 5000);
     } else {
@@ -165,53 +173,57 @@ function kill(noun) {
 function santa() {
     output.appendChild(document.createElement("br"));
 
-    // check if all tasks completed
+    // does player have papers
     if (items[7].location === inventory) {
-        tasks++;
+        var done = x
+        x = false
+        if (done == false) {
+            tasks++;
+        }
     }
 
     // if enough tasks done, end game
     if (tasks >= 4) {
         outputText("Santa rises slowly from the command chair, his glossy eyes locking onto yours. The air thickens around you, charged with a strange, expectant energy.");
-        
-        setTimeout(function() {
+
+        setTimeout(function () {
             outputText("His voice, low and otherworldly, whispers: 'Thank you...'");
             var audio = new Audio("/audio/bellSound.mp3");
             audio.play();
         }, 2000);
-        
-        setTimeout(function() {
+
+        setTimeout(function () {
             outputText("The room trembles violently, walls cracking and dust falling like fine snow. Cracks of brilliant light splinter across reality.");
         }, 4000);
-        
-        setTimeout(function() {
+
+        setTimeout(function () {
             outputText("The sleigh materializes before you, its runners glowing with ancient power. The reindeer's eyes burn with ethereal light, alive and aware.");
         }, 6000);
-        
-        setTimeout(function() {
+
+        setTimeout(function () {
             outputText("You feel yourself lifted, gravity releasing its grip. The ground falls away beneath your feet as the North Pole dissolves into starlight and shadow.");
         }, 8000);
-        
-        setTimeout(function() {
+
+        setTimeout(function () {
             outputText("Time fractures. In a single eternal moment, you witness everything—endless deliveries across countless worlds, children's wonder made manifest, centuries of magic and purpose intertwined.");
         }, 10000);
-        
-        setTimeout(function() {
+
+        setTimeout(function () {
             outputText("The visions fade. A white void stretches endlessly in all directions, infinite and serene. You have awakened something ancient, and it has acknowledged you.");
         }, 12000);
-        
-        setTimeout(function() {
+
+        setTimeout(function () {
             outputText("Your task is complete. The North Pole fades into memory and dream...");
         }, 14000);
-        
-        setTimeout(function() {
+
+        setTimeout(function () {
             window.location.href = "gameEnd.html";
-        }, 16000);
+        }, 20000);
     } else {
         outputText("Santa stirs slightly, his eyes flickering open, but he remains seated, motionless, as if waiting for something more.");
         outputText("A soft rumble passes through the room, the air heavy with anticipation. Perhaps you still have more to do before he truly awakens.");
         john()
-        setInterval(function(){
+        setInterval(function () {
             output.appendChild(document.createElement("br"));
             outputText("help")
         }, 10000)
@@ -263,7 +275,7 @@ function initGame() {
         name: "Garage",
         exits: "east or south",
         hiddenExits: "west",
-        desc: "The garage stretches beyond reason, its ceiling vanishing into shadow. Cold drafts curl along the walls like ghostly fingers, brushing against your skin. The sleigh dominates the center, its metal runners humming softly, as if recalling journeys it should never have taken. In the stalls, the reindeer stand statuesque—their glassy eyes flicker whenever you look away, hinting at a quiet awareness."
+        desc: "The garage stretches beyond reason, its ceiling vanishing into shadow. Cold drafts curl along the walls like ghostly fingers, brushing against your skin. The sleigh dominates the center, its metal runners humming softly, as if recalling journeys it should never have taken. In the stalls, the reindeer stand statuesque—their glassy eyes flicker whenever you look away, hinting at a quiet awareness. There's a strange sound emanating from the west."
     };
     rooms[2] = {
         name: "Workshop",
@@ -273,7 +285,7 @@ function initGame() {
     rooms[3] = {
         name: "Santa's HQ",
         exits: "east",
-        desc: "The command room hums with low electrical static that pricks along your arms. Walls are lined with flickering screens showing distorted maps and unreadable codes. A red carpet feels plush yet unnervingly cold. In the massive chair sits a figure motionless, but faint rustles hint at imperceptible movement. Occasionally, the screens flash bright red—a silent warning you can't quite decipher."
+        desc: "The command room hums with low electrical static that pricks along your arms. Walls are lined with flickering screens showing distorted maps and unreadable codes. A red carpet feels plush yet unnervingly cold. In the massive chair sits a figure motionless, but faint rustles hint at imperceptible movement. Occasionally, the screens flash bright red—a silent warning you can't quite decipher. There's a strange sound emanating from the north."
     };
     rooms[4] = {
         name: "Connector",
@@ -291,7 +303,7 @@ function initGame() {
         exits: "north",
         desc: "The front desk area feels frozen in time. Overhead lanterns cast amber light, the air dry and dusty. Papers shuffle subtly on the desk, separating names into neat columns of naughty and nice. A bell rests untouched, yet you could swear it rings under its own volition. The office chair slowly shifts, as if observing you."
     }
-    
+
     // initialize items
     items[0] = {
         name: "Sleigh",
@@ -370,7 +382,8 @@ function initGame() {
         name: "Candy Cane",
         desc: "A striped cane that's unusually light. A soft tapping seems to echo from within, as though something inside is waiting for you to pay attention.",
         location: 5,
-        gettable: false
+        gettable: true,
+        visible: true
     };
 
     items[10] = {
@@ -387,7 +400,34 @@ function initGame() {
         gettable: true,
         visible: true
     };
-    
+
+    items[12] = {
+        name: "Box",
+        desc: "A cardboard box, wrinkled and stained with blood from years of use - the sides are close the bursting.",
+        location: 5,
+        gettable: false,
+        visible: true,
+    };
+
+    items[13] = {
+        name: "Mistletoe",
+        desc: "Don't do what I think youre going to do...",
+        location: box,
+        gettable: true,
+        visible: true,
+    };
+
+    items[14] = {
+        name: "Dead rat",
+        desc: "I wouldn't eat that if I were you",
+        location: box,
+        gettable: true,
+        visible: true,
+        eatable: true,
+    }
+
+    outputText("Another day at work, today's the big day, the day that relies on masterful precision and hard work throughout the year. Your briefing yesterday stated 'Come in tomorrow, ask no questions - get your job done and leave', you know santa gets cranky during Christamas time, but this seems suspicios - as if something is really off...")
+    output.appendChild(document.createElement("br"))
     // start player in front desk room
     roomsNum = 7
     // track first room as discovered
@@ -469,6 +509,20 @@ function showrooms() {
 // ITEM INTERACTIONS
 // =======================
 
+function eat(noun) {
+    output.appendChild(document.createElement("br"));
+    if (noun.toUpperCase() == "DEAD RAT" || noun.toUpperCase() == "RAT") {
+        if (boxOpen == true || items[14].location == inventory) {
+            x = getElementById("output")
+            x.setAttribute("id", "damage")
+            console.log("test")
+        } else
+            outputText("You don't have a rat to eat")
+    } else {
+        outputText("You cant eat " + noun)
+    }
+}
+
 // throw item to random room
 function chuck(noun) {
     output.appendChild(document.createElement("br"));
@@ -537,6 +591,15 @@ function get(noun) {
     let found = false;
     for (let item of items) {
         if (item.name.toUpperCase() === noun && item.location === roomsNum && item.gettable === true) {
+            var audio = new Audio("/audio/pop.mp3");
+            audio.play();
+            item.location = inventory;
+            invAdd(item);
+            outputText("You pick up " + item.name.toLowerCase());
+            found = true;
+            break;
+        }
+        if (item.name.toUpperCase() === noun && item.location === box && item.gettable === true) {
             var audio = new Audio("/audio/pop.mp3");
             audio.play();
             item.location = inventory;
@@ -641,6 +704,27 @@ function harness(noun) {
     }
 }
 
+// open box, view items inside
+function openBox(noun) {
+    output.appendChild(document.createElement("br"));
+    if (noun.toUpperCase() === "BOX" || noun.toUpperCase() === "IN BOX") {
+        // only works in wrapping station
+        if (roomsNum == 5) {
+            boxOpen = true
+            outputText("You can see:")
+            for (itemsNum in items) {
+                if (items[itemsNum].location == box && items[itemsNum].visible == true) {
+                    outputText(items[itemsNum].name)
+                }
+            }
+        } else {
+            outputText("There is no box here")
+        }
+    } else {
+        outputText("You cant open " + noun)
+    }
+}
+
 // =======================
 // INVENTORY
 // =======================
@@ -693,8 +777,13 @@ function help(noun) {
         outputText("Examine items:");
         outputText("Examine, inspect, x");
         outputText("===");
+        outputText("Open containers:")
+        outputText("Open, look in")
+        outputText("===");
         outputText("Other (item-specific / unique actions):");
-        outputText("Feed, ring, wrap, hitch, harness, sleep");
+        outputText("Feed, ring, wrap, hitch, harness");
+        outputText("===");
+        outputText("There are more to be discovered as you play");
         outputText("===");
         outputText("Exit:")
         outputText("Back or leave")
@@ -702,7 +791,7 @@ function help(noun) {
         // complain if asked too many times
         outputText("A faint whisper echoes in the room: 'Are you seriously going to keep asking that?'");
     } else {
-        // hint to ask nicely
+        // ask nicely
         outputText("The room waits patiently. Perhaps ask nicely.");
     }
 }
