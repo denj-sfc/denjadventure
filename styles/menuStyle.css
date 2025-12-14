@@ -1,3 +1,8 @@
+html, body {
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
 body {
     height: 100vh;
     background: radial-gradient(circle at center, #2b0b0b, #120202);
@@ -13,6 +18,8 @@ body {
     padding: 40px 60px;
     border: 2px solid #920707;
     box-shadow: 0 0 25px rgba(255, 159, 159, 0.3);
+    position: relative;
+    z-index: 2; /* ensure menu sits above background video */
 }
 
 h1 {
@@ -87,4 +94,12 @@ button:hover {
 
 .hidden {
     display: none;
+}
+
+#bgVideo {
+    position: fixed;
+    min-width: fit-content;
+    min-height: fit-content;
+    z-index: -1;
+    filter: brightness(0.45);
 }

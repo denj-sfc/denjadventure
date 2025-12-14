@@ -1,19 +1,19 @@
-// start the game by redirecting to game.html
+// start  game
 function startGame() {
     window.location.href = "game.html";
 }
 
-// show the options panel
+// show options panel
 function showOptions() {
     document.getElementById("optionsPanel").classList.remove("hidden");
 }
 
-// close the options panel
+// close options panel
 function closeOptions() {
     document.getElementById("optionsPanel").classList.add("hidden");
 }
 
-// quit the game with an alert and close the window
+// quit game
 function quitGame() {
     alert("There is no escape.");
     window.close();
@@ -26,27 +26,27 @@ function enableMenuMusic() {
     
     // unlock audio playback
     function unlockAudio() {
-        music.muted = false; // unmute the music
+        music.muted = false; // unmute music
         let savedVolume = localStorage.getItem("musicVolume");
         music.volume = savedVolume !== null ? savedVolume : 0.7; // set volume
-        music.play(); // play the music
+        music.play(); // play music
         document.removeEventListener("keydown", unlockAudio); // remove event listener
-        document.removeEventListener("click", unlockAudio); // remove event listener
+        document.removeEventListener("click", unlockAudio); // ^^
     }
     
-    // add event listeners to unlock audio on keydown or click
+    // add event listeners
     document.addEventListener("keydown", unlockAudio, { once: true });
     document.addEventListener("click", unlockAudio, { once: true });
 }
 
-// set the volume of the music
+// set volume of music
 function setVolume(value) {
     let music = document.getElementById("menuMusic");
     music.volume = value; // set the volume
     localStorage.setItem("musicVolume", value); // save volume to local storage
 }
 
-// load the saved volume from local storage
+// load saved volume from local storage
 function loadVolume() {
     let savedVolume = localStorage.getItem("musicVolume");
     if (savedVolume !== null) {
@@ -54,7 +54,7 @@ function loadVolume() {
     }
 }
 
-// navigate back to the main menu
+// navigate back to menu
 function menu() {
     window.location.href = "index.html";
 }

@@ -1,3 +1,8 @@
+html, body {
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
 body {
     height: 100vh;
     background: radial-gradient(circle at center, #ffffff, #cccccc);
@@ -49,4 +54,12 @@ button:hover {
     margin-top: 25px;
     font-size: 11px;
     opacity: 0.5;
+}
+
+#bgVideo {
+    position: fixed;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: -1;
+    filter: brightness(0.45);
 }

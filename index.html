@@ -8,10 +8,15 @@
     <script src="/scripts/menuScript.js" defer></script>
 </head>
 
-<body id="body" onload="enableMenuMusic(); loadVolume();">
+<body id="body" onload="enableMenuMusic(); loadVolume(); loadVideoSettings();">
 
     <!-- audio -->
     <audio id="menuMusic" src="/audio/menuMusic.mp3" loop muted autoplay></audio>
+
+    <!-- background video -->
+    <video id="bgVideo" autoplay muted loop playsinline preload="auto" poster="/video/whiteSnow.mp4">
+        <source src="/video/whiteSnow.mp4" type="video/mp4">
+    </video>
 
     <!-- main Menu -->
     <div class="menu">
