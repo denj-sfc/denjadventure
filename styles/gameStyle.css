@@ -141,6 +141,6 @@ body {
     display: none;
 }
 
-#damage {
+.damage {
     background: radial-gradient(circle at center, #1a1a1a, #550000);
 }

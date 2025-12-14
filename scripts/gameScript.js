@@ -285,6 +285,7 @@ function initGame() {
     rooms[3] = {
         name: "Santa's HQ",
         exits: "east",
+        hiddenExits: "north",
         desc: "The command room hums with low electrical static that pricks along your arms. Walls are lined with flickering screens showing distorted maps and unreadable codes. A red carpet feels plush yet unnervingly cold. In the massive chair sits a figure motionless, but faint rustles hint at imperceptible movement. Occasionally, the screens flash bright red—a silent warning you can't quite decipher. There's a strange sound emanating from the north."
     };
     rooms[4] = {
@@ -513,9 +514,14 @@ function eat(noun) {
     output.appendChild(document.createElement("br"));
     if (noun.toUpperCase() == "DEAD RAT" || noun.toUpperCase() == "RAT") {
         if (boxOpen == true || items[14].location == inventory) {
-            x = getElementById("output")
-            x.setAttribute("id", "damage")
-            console.log("test")
+            x = document.getElementById("output")
+            setInterval(function () {
+                x.setAttribute("class", "damage")               
+            }, 2000)
+            setInterval(function () {
+                x.removeAttribute("class", "damage")
+            }, 4000)
+            outputText("You take a bite of the rat. The taste is foul, a mix of decay and something metallic. Almost immediately, a wave of nausea hits you, your vision blurring as the room spins uncontrollably. Some things are better left uneaten...");
         } else
             outputText("You don't have a rat to eat")
     } else {
