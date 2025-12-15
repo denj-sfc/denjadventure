@@ -171,7 +171,10 @@ function chain(noun) {
     if (items[16].location == inventory) {
         if (noun == "SANTA") {
             if (roomsNum == 3) {
-
+                var audio = new Audio("/audio/chain.mp3");
+                audio.play();
+                santaChained = true;
+                outputText("You approach Santa silently, the cold metal chains heavy in your hands. With a swift motion, you loop them around his wrists and ankles, securing him tightly to the chair. His eyes flutter open briefly, a flicker of recognition passing through them before they close again. The room feels charged, as if the very air is holding its breath.");
             } else {
                 outputText("You can't see santa")
             }
@@ -194,6 +197,8 @@ function kiss(noun) {
     output.appendChild(document.createElement("br"));
     if (noun.toUpperCase() === "SANTA" && roomsNum === 3) {
         if (items[13].location === inventory) {
+            var audio = new Audio("/audio/kiss.mp3");
+            audio.play();
             outputText("Holding the mistletoe above your head, you approach Santas cold body. His chilling breath caresses your face...");
             setTimeout(function () {
                 outputText("His eyes shoot open as you make contact with his icy blue lips...");
@@ -214,10 +219,38 @@ function kill(noun) {
     output.appendChild(document.createElement("br"));
     if (noun.toUpperCase() === "SANTA" && roomsNum === 3) {
         if (items[11].location === inventory) {
-            outputText("You lunge at Santa with the knife, but as you strike, he vanishes into a swirl of shadows and cold air. A chilling laughter echoes around you, and you feel an icy grip on your soul. The room fades to black, and you realize some forces are beyond your control.");
-            setTimeout(function () {
-                window.location.href = "gameEnd.html";
-            }, 7000);
+            if (santaChained == true) {
+                var audio = new Audio("/audio/unsheath.mp3");
+                audio.play();
+                setTimeout(function () {
+                    var audio = new Audio("/audio/stab.mp3");
+                    audio.play();
+                }, 2000);
+                outputText("The chains rattle as Santa's laughter grows louder, echoing through the void you've entered. It seems binding him was a mistake...");
+                setTimeout(function () {
+                    outputText("The knife slices throught the cold air, plunging into its eternal home - your own heart...");
+                }, 3000);
+                setTimeout(function () {
+                    outputText("Darkness envelops you, and you feel your life slipping away. Blood seeps from your wound, pooling around you as the laughter fades into a haunting silence.");
+                }, 6000);
+                setTimeout(function () {
+                    outputText("You have met a grim fate, all in the name of curiosity...");
+                }, 9000);
+                setTimeout(function () {
+                    window.location.href = "gameEnd.html";
+                }, 12000);
+            } else{
+                var audio = new Audio("/audio/unsheath.mp3");
+                audio.play();
+                setTimeout(function () {
+                    var audio = new Audio("/audio/stab.mp3");
+                    audio.play();
+                }, 2000);
+                outputText("You lunge at Santa with the knife, but as you strike, he vanishes into a swirl of shadows and cold air. A chilling laughter echoes around you, and you feel an icy grip on your soul. The room fades to black, and you realize some forces are beyond your control.");
+                setTimeout(function () {
+                    window.location.href = "gameEnd.html";
+                }, 7000);
+            }           
         } else {
             intFailSound();
             outputText("You don't have the facilities for that... maybe you need a *knife*")
@@ -784,6 +817,8 @@ function openBox(noun) {
     if (noun.toUpperCase() === "BOX" || noun.toUpperCase() === "IN BOX") {
         // only works in wrapping station
         if (roomsNum == 5) {
+            var audio = new Audio("/audio/openChest.mp3");
+            audio.play();
             boxOpen = true;
             outputText("You can see:");
             for (itemsNum in items) {
