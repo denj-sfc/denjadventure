@@ -521,7 +521,7 @@ function initGame() {
 
     items[15] = {
         name: "Clipboard",
-        desc: "A clipboard, pages slightly stained by blood spatter - 'THINGS TO DO: Give Santa documents, Wrap toys, Feed reindeer, Harness reindeer, Wake up the man himself",
+        desc: "A clipboard, pages slightly stained by blood spatter - 'THINGS TO DO: Give Santa documents, Wrap toys, Feed reindeer, Harness reindeer, Wake up Santa with bell'",
         location: 7,
         visible: true,
         gettable: true,
