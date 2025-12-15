@@ -54,7 +54,7 @@ function parser(cmd) {
         case "DROP": case "REMOVE":
             drop(noun);
             break;
-        case "EXAMINE": case "EX": case "X":
+        case "EXAMINE": case "EX": case "X": case "LOOKAT": case "INSPECT":
             examine(noun);
             break;
         case "SLEEP":
