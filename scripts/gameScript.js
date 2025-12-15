@@ -238,7 +238,7 @@ function kill(noun) {
                 }, 9000);
                 setTimeout(function () {
                     window.location.href = "gameEnd.html";
-                }, 12000);
+                }, 15000);
             } else{
                 var audio = new Audio("/audio/unsheath.mp3");
                 audio.play();
