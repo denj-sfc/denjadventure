@@ -626,8 +626,30 @@ function eat(noun) {
         if (boxOpen == true || items[14].location == inventory) {
             damagePlayer();
             outputText("You take a bite of the rat. The taste is foul, a mix of decay and something metallic. Almost immediately, a wave of nausea hits you, your vision blurring as the room spins uncontrollably. Some things are better left uneaten...");
+            for (let item of items) {
+                if (item.name.toUpperCase() === "DEAD RAT" && item.location === inventory) {
+                    item.location = gone;
+                    invDrop(item);
+                }
+            }
         } else
             outputText("You don't have a rat to eat");
+    } else {
+        outputText("You cant eat " + noun.toLowerCase());
+    }
+    if (noun.toUpperCase() == "CANDY CANE" || noun.toUpperCase() == "CANDYCANE") {
+        if (items[9].location == inventory) {
+            outputText("You unwrap the candy cane and take a bite. The sweetness spreads through your mouth, warm and soothing. Your wounds begin to heal, the pain fading away...");
+            healPlayer();
+            for (let item of items) {
+                if (item.name.toUpperCase() === "CANDY CANE" && item.location === inventory) {
+                    item.location = gone;
+                    invDrop(item);
+                }
+            }
+        } else {
+            outputText("You don't have a candy cane to eat");
+        }
     } else {
         outputText("You cant eat " + noun.toLowerCase());
     }
@@ -832,7 +854,7 @@ function openBox(noun) {
             outputText("There is no box here");
         }
     } else {
-        outputText("You cant open " + noun);
+        outputText("You cant open " + noun.toLowerCase());
     }
 }
 
@@ -871,13 +893,27 @@ function invDrop(item) {
 
 // player damage UI
 function damagePlayer() {
-    x = document.getElementById("output");
-    setInterval(function () {
+    let damage = setInterval(function () {
+        x = document.getElementById("output");
         x.setAttribute("class", "damage");
     }, 2000);
-    setInterval(function () {
+    let remove = setInterval(function () {
         x.removeAttribute("class", "damage");
     }, 4000);
+    
+    // Store intervals globally so they can be cleared
+    window.intervals = {damageInterval: damage, removeInterval: remove};
+}
+
+// stop player damage UI
+function healPlayer() {
+    if (window.intervals) {
+        clearInterval(window.intervals.damageInterval);
+        clearInterval(window.intervals.removeInterval);
+        window.intervals = null;
+    }
+    x = document.getElementById("output");
+    x.removeAttribute("class", "damage");
 }
 
 // show help menu
