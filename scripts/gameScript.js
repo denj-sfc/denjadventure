@@ -536,6 +536,8 @@ function initGame() {
     }
 
     outputText("Another day at work, today's the big day, the day that relies on masterful precision and hard work throughout the year. Your briefing yesterday stated 'Come in tomorrow, ask no questions - get your job done and leave', you know santa gets cranky during Christamas time, but this seems suspicios - as if something is really off...")
+    outputText("You arrive at the North Pole facility, the air biting and cold. The building looms ahead, its windows dark and unwelcoming. You step inside, the door creaking ominously behind you as you enter the dimly lit front desk area.");
+    outputText("Let's see what you have to do today on your clipboard...");
     output.appendChild(document.createElement("br"));
     // start player in front desk room
     roomsNum = 7;
