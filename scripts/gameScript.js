@@ -10,6 +10,7 @@ let inventory = -1 // location for items in inventory
 let gone = -2 // location for removed items
 let box = -3 // location for items in box
 let boxOpen = false
+let santaChained = false
 const MAPWIDTH = 3 // width of map (3x3 grid)
 
 // =======================
@@ -18,10 +19,10 @@ const MAPWIDTH = 3 // width of map (3x3 grid)
 // listen for enter key and process command
 function checkInput(e) {
     if (e.key == "Enter") {
-        e.preventDefault()
-        command = cli.textContent.trim()
-        cli.innerHTML = ""
-        parser(command) // send command to parser
+        e.preventDefault();
+        command = cli.textContent.trim();
+        cli.innerHTML = "";
+        parser(command); // send command to parser
     }
 }
 
@@ -30,68 +31,77 @@ function checkInput(e) {
 // =======================
 // break down command call appropriate function
 function parser(cmd) {
-    let cmdWords = cmd.trim().toUpperCase().split(" ")
-    let verb = cmdWords[0] // action
-    var noun = cmdWords.slice(1).join(" ") // target
+    let cmdWords = cmd.trim().toUpperCase().split(" ");
+    let verb = cmdWords[0]; // action
+    var noun = cmdWords.slice(1).join(" "); // target
     switch (verb) {
         case "NORTH": case "N":
-            moveNorth()
+            moveNorth();
             break;
         case "SOUTH": case "S":
-            moveSouth()
+            moveSouth();
             break;
         case "EAST": case "E":
-            moveEast()
+            moveEast();
             break;
         case "WEST": case "W":
-            moveWest()
+            moveWest();
             break;
         // item interactions
         case "GET": case "PICKUP": case "TAKE": case "GRAB": case "GTE":
-            get(noun)
+            get(noun);
             break;
         case "DROP": case "REMOVE":
-            drop(noun)
+            drop(noun);
             break;
         case "EXAMINE": case "EX": case "X":
-            examine(noun)
+            examine(noun);
             break;
         case "SLEEP":
-            john()
+            john();
             break;
         case "FEED":
-            feedReindeer(noun)
+            feedReindeer(noun);
             break;
         case "RING":
-            ringBell(noun)
+            ringBell(noun);
             break;
         case "WRAP":
-            wrapPresents(noun)
+            wrapPresents(noun);
             break;
         case "HARNESS": case "HITCH": case "HITCHUP":
-            harness(noun)
+            harness(noun);
             break;
         case "THROW": case "CHUCK":
-            chuck(noun)
+            chuck(noun);
             break;
         case "HIT": case "ATTACK": case "KILL": case "SLAY": case "STAB":
-            kill(noun)
+            kill(noun);
+            break;
+        case "CHAIN": case "TIE": case "RESTRAIN": case "SHACKLE":
+            chain(noun);
+            break;
+        case "KISS": case "MISTLETOE":
+            kiss(noun);
+            break;
+        case "SHOUT":
+            shout();
             break;
         case "OPEN": case "LOOK":
-            openBox(noun)
+            openBox(noun);
             break;
         case "EAT": case "DEVOUR": case "INGEST":
-            eat(noun)
+            eat(noun);
             break;
         case "HELP":
-            help(noun)
+            help(noun);
             break;
         case "BACK": case "LEAVE":
-            back()
+            back();
             break;
         default: // default
-            intFailSound()
-            outputText("Hmmm...")
+            intFailSound();
+            outputText("Hmmm...");
     }
 }
 
@@ -114,40 +124,40 @@ function moveNorth() {
 
 function moveEast() {
     if (rooms[roomsNum].exits.includes("east")) {
-        roomsNum++
-        discoveredrooms.push(roomsNum)
-        showrooms()
-        updateMinimap()
-        walkSound()
+        roomsNum++;
+        discoveredrooms.push(roomsNum);
+        showrooms();
+        updateMinimap();
+        walkSound();
     } else {
-        intFailSound()
-        outputText("You can't go that way")
+        intFailSound();
+        outputText("You can't go that way");
     }
 }
 
 function moveSouth() {
     if (rooms[roomsNum].exits.includes("south")) {
-        roomsNum += MAPWIDTH
-        discoveredrooms.push(roomsNum)
-        showrooms()
-        updateMinimap()
-        walkSound()
+        roomsNum += MAPWIDTH;
+        discoveredrooms.push(roomsNum);
+        showrooms();
+        updateMinimap();
+        walkSound();
     } else {
-        intFailSound()
-        outputText("You can't go that way")
+        intFailSound();
+        outputText("You can't go that way");
     }
 }
 
 function moveWest() {
     if (rooms[roomsNum].exits.includes("west") || rooms[roomsNum].hiddenExits.includes("west")) {
-        roomsNum--
-        discoveredrooms.push(roomsNum)
-        showrooms()
-        updateMinimap()
-        walkSound()
+        roomsNum--;
+        discoveredrooms.push(roomsNum);
+        showrooms();
+        updateMinimap();
+        walkSound();
     } else {
-        intFailSound()
-        outputText("You can't go that way")
+        intFailSound();
+        outputText("You can't go that way");
     }
 }
 
@@ -155,17 +165,66 @@ function moveWest() {
 // PLAYER ACTIONS
 // =======================
 
+// chain up santa (MAKE KILL FUNC REACT TO THIS)
+function chain(noun) {
+    output.appendChild(document.createElement("br"));
+    if (items[16].location == inventory) {
+        if (noun == "SANTA") {
+            if (roomsNum == 3) {
+
+            } else {
+                outputText("You can't see santa")
+            }
+        } else {
+            outputText("You can't chain up " + noun.toLowerCase())
+        }
+    } else {
+        outputText("You don't have a chain... go find one")
+    }
+}
+
+// shout (for fun)
+function shout() {
+    output.appendChild(document.createElement("br"));
+    outputText("You shout jumbled nonsense - I don't know if you expected a reply, but I appreciate your commitment...")
+}
+
+// kiss santa under mistletoe
+function kiss(noun) {
+    output.appendChild(document.createElement("br"));
+    if (noun.toUpperCase() === "SANTA" && roomsNum === 3) {
+        if (items[13].location === inventory) {
+            outputText("Holding the mistletoe above your head, you approach Santas cold body. His chilling breath caresses your face...");
+            setTimeout(function () {
+                outputText("His eyes shoot open as you make contact with his icy blue lips...");
+            }, 2000)
+            setTimeout(function () {
+                outputText("Come on... this isn't the game for that");
+            }, 4000)
+        } else {
+            outputText("Wheres the mistletoe?")
+        }
+    } else {
+        outputText("You can't kiss " + noun.toLowerCase() + " why would you want to...");
+    }
+}
+
 // kill santa easter egg
 function kill(noun) {
     output.appendChild(document.createElement("br"));
-    if (noun.toUpperCase() === "SANTA" && roomsNum === 3 && items[11].location === inventory) {
-        outputText("You lunge at Santa with the knife, but as you strike, he vanishes into a swirl of shadows and cold air. A chilling laughter echoes around you, and you feel an icy grip on your soul. The room fades to black, and you realize some forces are beyond your control.");
-        setTimeout(function () {
-            window.location.href = "gameEnd.html";
-        }, 5000);
+    if (noun.toUpperCase() === "SANTA" && roomsNum === 3) {
+        if (items[11].location === inventory) {
+            outputText("You lunge at Santa with the knife, but as you strike, he vanishes into a swirl of shadows and cold air. A chilling laughter echoes around you, and you feel an icy grip on your soul. The room fades to black, and you realize some forces are beyond your control.");
+            setTimeout(function () {
+                window.location.href = "gameEnd.html";
+            }, 7000);
+        } else {
+            intFailSound();
+            outputText("You don't have the facilities for that... maybe you need a *knife*")
+        }
     } else {
         intFailSound();
-        outputText("Violence isn't the answer here.");
+        outputText("You cant kill " + noun.toLowerCase());
     }
 }
 
@@ -175,8 +234,8 @@ function santa() {
 
     // does player have papers
     if (items[7].location === inventory) {
-        var done = x
-        x = false
+        var done = x;
+        x = false;
         if (done == false) {
             tasks++;
         }
@@ -222,10 +281,10 @@ function santa() {
     } else {
         outputText("Santa stirs slightly, his eyes flickering open, but he remains seated, motionless, as if waiting for something more.");
         outputText("A soft rumble passes through the room, the air heavy with anticipation. Perhaps you still have more to do before he truly awakens.");
-        john()
+        john();
         setInterval(function () {
             output.appendChild(document.createElement("br"));
-            outputText("help")
+            outputText("help");
         }, 10000)
     }
 }
@@ -412,7 +471,7 @@ function initGame() {
 
     items[13] = {
         name: "Mistletoe",
-        desc: "Don't do what I think youre going to do...",
+        desc: "Don't do what I think you're going to do...",
         location: box,
         gettable: true,
         visible: true,
@@ -420,24 +479,40 @@ function initGame() {
 
     items[14] = {
         name: "Dead rat",
-        desc: "I wouldn't eat that if I were you",
+        desc: "A dead rat, it looks like the box has already nibbled on it - I wouldn't eat that if I were you",
         location: box,
         gettable: true,
         visible: true,
         eatable: true,
+    };
+
+    items[15] = {
+        name: "Clipboard",
+        desc: "A clipboard, pages slightly stained by blood spatter - 'THINGS TO DO: Give Santa documents, Wrap toys, Feed reindeer, Harness reindeer, Wake up the man himself",
+        location: 7,
+        visible: true,
+        gettable: true,
+    };
+
+    items[16] = {
+        name: "Chains",
+        desc: "Large, solid loops of metal connected to eachother - rusted from time, leaving brown residue on anything that touches them - could definitely hold someone down...",
+        location: 0,
+        visible: true,
+        gettable: true,
     }
 
     outputText("Another day at work, today's the big day, the day that relies on masterful precision and hard work throughout the year. Your briefing yesterday stated 'Come in tomorrow, ask no questions - get your job done and leave', you know santa gets cranky during Christamas time, but this seems suspicios - as if something is really off...")
-    output.appendChild(document.createElement("br"))
+    output.appendChild(document.createElement("br"));
     // start player in front desk room
-    roomsNum = 7
+    roomsNum = 7;
     // track first room as discovered
-    discoveredrooms.push(7)
+    discoveredrooms.push(7);
     // focus on input field
-    cli.focus()
+    cli.focus();
     // display starting room
-    showrooms()
-    updateMinimap()
+    showrooms();
+    updateMinimap();
 }
 
 // =======================
@@ -446,64 +521,64 @@ function initGame() {
 
 // add text to output display
 function outputText(txt) {
-    let newPara = document.createElement("p")
-    newPara.innerHTML = txt
-    output.appendChild(newPara)
-    newPara.scrollIntoView()
+    let newPara = document.createElement("p");
+    newPara.innerHTML = txt;
+    output.appendChild(newPara);
+    newPara.scrollIntoView();
 }
 
 // update minimap display based on discovered rooms
 function updateMinimap() {
-    let minimapGrid = document.getElementById("minimap-grid")
-    minimapGrid.innerHTML = ""
+    let minimapGrid = document.getElementById("minimap-grid");
+    minimapGrid.innerHTML = "";
 
     for (let i = 0; i <= 8; i++) {
-        let roomsBox = document.createElement("div")
-        roomsBox.className = "minimap-rooms"
+        let roomsBox = document.createElement("div");
+        roomsBox.className = "minimap-rooms";
         // hide inaccessible rooms
         if (i === 0 || i === 6 || i === 8) {
-            roomsBox.style.visibility = "hidden"
-            minimapGrid.appendChild(roomsBox)
-            continue
+            roomsBox.style.visibility = "hidden";
+            minimapGrid.appendChild(roomsBox);
+            continue;
         }
         // show discovered rooms
         if (discoveredrooms.includes(i)) {
-            roomsBox.innerHTML = rooms[i] ? rooms[i].name : "?"
-            roomsBox.style.backgroundColor = "#1a1a1a"
-            roomsBox.style.color = "#b0b0b0"
+            roomsBox.innerHTML = rooms[i] ? rooms[i].name : "?";
+            roomsBox.style.backgroundColor = "#1a1a1a";
+            roomsBox.style.color = "#b0b0b0";
         } else {
             // show undiscovered rooms as question marks
-            roomsBox.innerHTML = "?"
-            roomsBox.style.backgroundColor = "#0a0a0a"
-            roomsBox.style.color = "#404040"
+            roomsBox.innerHTML = "?";
+            roomsBox.style.backgroundColor = "#0a0a0a";
+            roomsBox.style.color = "#404040";
         }
         // highlight current room
         if (i === roomsNum) {
-            roomsBox.classList.add("current")
+            roomsBox.classList.add("current");
         }
-        minimapGrid.appendChild(roomsBox)
+        minimapGrid.appendChild(roomsBox);
     }
 }
 
 // display current room info
 function showrooms() {
-    outputText("══════════════════")
-    outputText("--- " + rooms[roomsNum].name + " ---")
-    outputText("══════════════════")
-    output.appendChild(document.createElement("br"))
+    outputText("══════════════════");
+    outputText("--- " + rooms[roomsNum].name + " ---");
+    outputText("══════════════════");
+    output.appendChild(document.createElement("br"));
     // show room description
-    outputText(rooms[roomsNum].desc)
-    output.appendChild(document.createElement("br"))
-    outputText("You can see:")
+    outputText(rooms[roomsNum].desc);
+    output.appendChild(document.createElement("br"));
+    outputText("You can see:");
     // list items in room
     for (itemsNum in items) {
         if (items[itemsNum].location == roomsNum && items[itemsNum].visible == true) {
-            outputText(items[itemsNum].name)
+            outputText(items[itemsNum].name);
         }
     }
-    output.appendChild(document.createElement("br"))
+    output.appendChild(document.createElement("br"));
     // show available exits
-    outputText("You can go " + rooms[roomsNum].exits)
+    outputText("You can go " + rooms[roomsNum].exits);
 }
 
 // =======================
@@ -514,25 +589,19 @@ function eat(noun) {
     output.appendChild(document.createElement("br"));
     if (noun.toUpperCase() == "DEAD RAT" || noun.toUpperCase() == "RAT") {
         if (boxOpen == true || items[14].location == inventory) {
-            x = document.getElementById("output")
-            setInterval(function () {
-                x.setAttribute("class", "damage")               
-            }, 2000)
-            setInterval(function () {
-                x.removeAttribute("class", "damage")
-            }, 4000)
+            damagePlayer();
             outputText("You take a bite of the rat. The taste is foul, a mix of decay and something metallic. Almost immediately, a wave of nausea hits you, your vision blurring as the room spins uncontrollably. Some things are better left uneaten...");
         } else
-            outputText("You don't have a rat to eat")
+            outputText("You don't have a rat to eat");
     } else {
-        outputText("You cant eat " + noun)
+        outputText("You cant eat " + noun.toLowerCase());
     }
 }
 
 // throw item to random room
 function chuck(noun) {
     output.appendChild(document.createElement("br"));
-    let room = Math.floor(Math.random(8))
+    let room = Math.floor(Math.random(8));
     let found = false;
     for (let item of items) {
         if (item.name.toUpperCase() === noun && item.location === inventory) {
@@ -560,7 +629,6 @@ function examine(noun) {
     let found = false;
     for (let item of items) {
         if (item.name.toUpperCase() === noun.toUpperCase() && (item.location === roomsNum || item.location === inventory)) {
-            output.appendChild(document.createElement("br"));
             outputText(item.desc);
             found = true;
         }
@@ -716,18 +784,18 @@ function openBox(noun) {
     if (noun.toUpperCase() === "BOX" || noun.toUpperCase() === "IN BOX") {
         // only works in wrapping station
         if (roomsNum == 5) {
-            boxOpen = true
-            outputText("You can see:")
+            boxOpen = true;
+            outputText("You can see:");
             for (itemsNum in items) {
                 if (items[itemsNum].location == box && items[itemsNum].visible == true) {
-                    outputText(items[itemsNum].name)
+                    outputText(items[itemsNum].name);
                 }
             }
         } else {
-            outputText("There is no box here")
+            outputText("There is no box here");
         }
     } else {
-        outputText("You cant open " + noun)
+        outputText("You cant open " + noun);
     }
 }
 
@@ -737,14 +805,14 @@ function openBox(noun) {
 
 // add item to inventory display
 function invAdd(item) {
-    let itemsContainer = document.getElementById("items-container")
-    let para = document.createElement("p")
-    para.classList.add("item")
-    para.textContent = item.name
-    itemsContainer.appendChild(para)
+    let itemsContainer = document.getElementById("items-container");
+    let para = document.createElement("p");
+    para.classList.add("item");
+    para.textContent = item.name;
+    itemsContainer.appendChild(para);
     // click item to examine it
     para.onclick = function () {
-        examine(item.name)
+        examine(item.name);
     };
 }
 
@@ -763,6 +831,17 @@ function invDrop(item) {
 // =======================
 // MISC
 // =======================
+
+// player damage UI
+function damagePlayer() {
+    x = document.getElementById("output");
+    setInterval(function () {
+        x.setAttribute("class", "damage");
+    }, 2000);
+    setInterval(function () {
+        x.removeAttribute("class", "damage");
+    }, 4000);
+}
 
 // show help menu
 function help(noun) {
@@ -821,7 +900,7 @@ function enableMenuMusic() {
     let music = document.getElementById("menuMusic");
     function unlockAudio() {
         music.muted = false;
-        music.volume = 0.3
+        music.volume = 0.3;
         music.play();
         // remove event listeners
         document.removeEventListener("keydown", unlockAudio);
@@ -847,7 +926,7 @@ function walkSound() {
 // play pop sound
 function pop() {
     var audio = new Audio("/audio/pop.mp3");
-    audio.play
+    audio.play;
 }
 
 // =======================
@@ -856,7 +935,7 @@ function pop() {
 
 let johnInterval = null;
 
-// play random video every 10 seconds
+// play john every 10 seconds
 function john() {
     if (johnInterval) return; // only start once
 
@@ -882,5 +961,5 @@ function john() {
             vid.remove();
         }, 1000);
 
-    }, 10000); // repeat every 10 seconds
+    }, 10000);
 }
