@@ -1,5 +1,3 @@
-//work on eat()
-
 // declare variables
 let tasks = 0 // completed tasks
 let asks = 0 // help requests
@@ -522,7 +520,7 @@ function initGame() {
     items[15] = {
         name: "Clipboard",
         desc: "A clipboard, pages slightly stained by blood spatter - 'THINGS TO DO: Give Santa documents, Wrap toys, Feed reindeer, Harness reindeer, Wake up Santa with bell'",
-        location: 7,
+        location: inventory,
         visible: true,
         gettable: true,
     };
@@ -539,6 +537,8 @@ function initGame() {
     outputText("You arrive at the North Pole facility, the air biting and cold. The building looms ahead, its windows dark and unwelcoming. You step inside, the door creaking ominously behind you as you enter the dimly lit front desk area.");
     outputText("Let's see what you have to do today on your clipboard...");
     output.appendChild(document.createElement("br"));
+    // give player clipboard
+    invAdd(items[15]); 
     // start player in front desk room
     roomsNum = 7;
     // track first room as discovered
@@ -634,7 +634,7 @@ function eat(noun) {
             }
         } else
             outputText("You don't have a rat to eat");
-    } else {
+    } else if (noun.toUpperCase() != "CANDY CANE" && noun.toUpperCase() != "CANDYCANE") {
         outputText("You cant eat " + noun.toLowerCase());
     }
     if (noun.toUpperCase() == "CANDY CANE" || noun.toUpperCase() == "CANDYCANE") {
@@ -650,7 +650,7 @@ function eat(noun) {
         } else {
             outputText("You don't have a candy cane to eat");
         }
-    } else {
+    } else if (noun.toUpperCase() != "DEAD RAT" && noun.toUpperCase() != "RAT") {
         outputText("You cant eat " + noun.toLowerCase());
     }
 }
@@ -791,9 +791,15 @@ function feedReindeer(noun) {
             intFailSound();
             outputText("There aren't any reindeer here, only shadows that seem to shift when you blink.");
         }
-    } else {
+    } else if (noun.toUpperCase() !== "SANTA") {
         intFailSound();
         outputText("You can't feed " + noun.toLowerCase());
+    }
+    if (noun.toUpperCase() === "SANTA" && roomsNum === 3 && items[5].location === inventory) {
+        outputText("You throw the oats towards Santa, but they simply bounce off his cold suit, landing uselessly on the floor. He remains motionless, unresponsive to your offering.");
+    } else {
+        intFailSound();
+        outputText("You don't have anything to feed Santa with.");
     }
 }
 
