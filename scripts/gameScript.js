@@ -59,7 +59,7 @@ function parser(cmd) {
             john();
             break;
         case "FEED":
-            feedReindeer(noun);
+            feed(noun);
             break;
         case "RING":
             ringBell(noun);
@@ -264,56 +264,59 @@ function santa() {
     output.appendChild(document.createElement("br"));
 
     // does player have papers
-    if (items[7].location === inventory) {
-        var done = x;
-        x = false;
-        if (done == false) {
-            tasks++;
-        }
+    if (items[7].location === inventory && !items[7].used) {
+        tasks++;
+        items[7].used = true;
     }
 
     // if enough tasks done, end game
     if (tasks >= 4) {
-        outputText("Santa rises slowly from the command chair, his glossy eyes locking onto yours. The air thickens around you, charged with a strange, expectant energy.");
-
+        outputText("A figure shifts in the shadows, eyes opening—he wakes up...");
         setTimeout(function () {
+            output.appendChild(document.createElement("br"));
+            outputText("Santa rises slowly from the command chair, his glossy eyes locking onto yours. The air thickens around you, charged with a strange, expectant energy.");
             outputText("His voice, low and otherworldly, whispers: 'Thank you...'");
-            var audio = new Audio("/audio/bellSound.mp3");
-            audio.play();
         }, 2000);
-
+        
         setTimeout(function () {
+            output.appendChild(document.createElement("br"));
             outputText("The room trembles violently, walls cracking and dust falling like fine snow. Cracks of brilliant light splinter across reality.");
-        }, 4000);
+        }, 5000);
 
         setTimeout(function () {
+            output.appendChild(document.createElement("br"));
             outputText("The sleigh materializes before you, its runners glowing with ancient power. The reindeer's eyes burn with ethereal light, alive and aware.");
-        }, 6000);
-
-        setTimeout(function () {
-            outputText("You feel yourself lifted, gravity releasing its grip. The ground falls away beneath your feet as the North Pole dissolves into starlight and shadow.");
         }, 8000);
 
         setTimeout(function () {
+            output.appendChild(document.createElement("br"));
+            outputText("You feel yourself lifted, gravity releasing its grip. The ground falls away beneath your feet as the North Pole dissolves into starlight and shadow.");
+        }, 11000);
+
+        setTimeout(function () {
+            output.appendChild(document.createElement("br"));
             outputText("Time fractures. In a single eternal moment, you witness everything—endless deliveries across countless worlds, children's wonder made manifest, centuries of magic and purpose intertwined.");
-        }, 10000);
-
-        setTimeout(function () {
-            outputText("The visions fade. A white void stretches endlessly in all directions, infinite and serene. You have awakened something ancient, and it has acknowledged you.");
-        }, 12000);
-
-        setTimeout(function () {
-            outputText("Your task is complete. The North Pole fades into memory and dream...");
         }, 14000);
 
         setTimeout(function () {
-            window.location.href = "gameEnd.html";
+            output.appendChild(document.createElement("br"));
+            outputText("The visions fade. A white void stretches endlessly in all directions, infinite and serene. You have awakened something ancient, and it has acknowledged you.");
+        }, 17000);
+
+        setTimeout(function () {
+            output.appendChild(document.createElement("br"));
+            outputText("Your task is complete. The North Pole fades into memory and dream...");
         }, 20000);
+
+        setTimeout(function () {
+            output.appendChild(document.createElement("br"));
+            window.location.href = "gameEnd.html";
+        }, 25000);
     } else {
         outputText("Santa stirs slightly, his eyes flickering open, but he remains seated, motionless, as if waiting for something more.");
         outputText("A soft rumble passes through the room, the air heavy with anticipation. Perhaps you still have more to do before he truly awakens.");
         john();
-        setInterval(function () {
+        setTimeout(function () {
             output.appendChild(document.createElement("br"));
             outputText("help");
         }, 10000)
@@ -338,6 +341,9 @@ function wrapPresents(noun) {
                     item.location = gone;
                     invDrop(item);
                 }
+                if (item.name.toUpperCase() === "WRAPPED PRESENTS") {
+                    item.location = inventory;
+                }
             }
         } else {
             intFailSound();
@@ -359,6 +365,7 @@ function initGame() {
     rooms[0] = {
         name: "Basement",
         exits: "east or south",
+        hiddenExits: "",
         desc: "The air is thick and metallic, heavy with the stench of old blood that never fully dried. Rusted chains hang from the rafters like frozen icicles, each one ending in a hook sharpened far beyond necessity. Splintered wooden toys—tiny trains, dolls with missing eyes, stuffed animals torn open—lie scattered across the floor, all soaked in the same dark stains. On the far wall, a massive workbench is lit by a single flickering bulb, illuminating blades arranged with obsessive care, each tagged with a child's name in trembling red ink. Deep gouges in the stone floor show where something… or someone… tried to crawl away. A Santa hat lies in the corner, its fluffy trim matted and brown. You can still hear it—faint, muffled—like someone choking on a carol they never wanted to sing.",
     };
     rooms[1] = {
@@ -370,6 +377,7 @@ function initGame() {
     rooms[2] = {
         name: "Workshop",
         exits: "south",
+        hiddenExits: "",
         desc: "The workshop smells of old varnish and cold metal. Long wooden tables stretch into dimness, cluttered with tools that glint strangely. A fine dust floats lazily, drifting against the air currents instead of with them. Half-finished toys sit unnaturally still, their painted eyes catching light that seems not to exist. A conveyor belt moves sporadically, as though following its own secret rhythm."
     };
     rooms[3] = {
@@ -381,17 +389,20 @@ function initGame() {
     rooms[4] = {
         name: "Connector",
         exits: "east, south or west",
+        hiddenExits: "",
         desc: "A narrow corridor stretches like a spine, its walls too close and lighting unreliable. Each flickering bulb creates illusions of movement ahead or behind you. The floorboards creak underfoot in hollow, uneven tones. Scattered oats lie in precise patterns, some shifting slightly as if nudged by unseen fingers."
     };
     rooms[5] = {
         name: "Wrapping Station",
         exits: "north or west",
+        hiddenExits: "",
         desc: "The wrapping station is a maze of paper rolls and half-finished packages. Fluorescent lights cast a sickly glow, highlighting shifting wrapping patterns. Paper draped over chairs moves slightly, as if breathing. A roll on the floor rustles toward a table leg like a patient serpent. A distant tapping echoes through the room, rhythmic but inexplicable."
     };
     rooms[6] = null;
     rooms[7] = {
         name: "Front Desk",
         exits: "north",
+        hiddenExits: "",
         desc: "The front desk area feels frozen in time. Overhead lanterns cast amber light, the air dry and dusty. Papers shuffle subtly on the desk, separating names into neat columns of naughty and nice. A bell rests untouched, yet you could swear it rings under its own volition. The office chair slowly shifts, as if observing you."
     }
 
@@ -481,7 +492,8 @@ function initGame() {
         name: "Wrapped Presents",
         desc: "Toys wrapped in animated paper that hums softly from the inside. The paper seems to pulse lightly, almost breathing, suggesting the contents are more than ordinary gifts.",
         location: gone,
-        gettable: true
+        gettable: true,
+        visible: true,
     };
 
     items[11] = {
@@ -627,24 +639,29 @@ function showrooms() {
 
 function eat(noun) {
     output.appendChild(document.createElement("br"));
-    if (noun.toUpperCase() == "DEAD RAT" || noun.toUpperCase() == "RAT") {
-        if (boxOpen == true || items[14].location == inventory) {
+    noun = noun.toUpperCase();
+
+    // rat
+    if (noun === "DEAD RAT" || noun === "RAT") {
+        if (boxOpen === true || items[14].location === inventory) {
             damagePlayer();
-            outputText("You take a bite of the rat. The taste is foul, a mix of decay and something metallic. Almost immediately, a wave of nausea hits you, your vision blurring as the room spins uncontrollably. Some things are better left uneaten...");
+            outputText("You take a bite of the rat. The taste is foul, a mix of decay and something metallic. Almost immediately, a wave of nausea hits you...");
             for (let item of items) {
                 if (item.name.toUpperCase() === "DEAD RAT" && item.location === inventory) {
                     item.location = gone;
                     invDrop(item);
                 }
             }
-        } else
+        } else {
             outputText("You don't have a rat to eat");
-    } else if (noun.toUpperCase() != "CANDY CANE" && noun.toUpperCase() != "CANDYCANE") {
-        outputText("You cant eat " + noun.toLowerCase());
+        }
+        return;
     }
-    if (noun.toUpperCase() == "CANDY CANE" || noun.toUpperCase() == "CANDYCANE") {
-        if (items[9].location == inventory) {
-            outputText("You unwrap the candy cane and take a bite. The sweetness spreads through your mouth, warm and soothing. Your wounds begin to heal, the pain fading away...");
+
+    // canmdy cane
+    if (noun === "CANDY CANE" || noun === "CANDYCANE") {
+        if (items[9].location === inventory) {
+            outputText("You unwrap the candy cane and take a bite. The sweetness spreads through your mouth...");
             healPlayer();
             for (let item of items) {
                 if (item.name.toUpperCase() === "CANDY CANE" && item.location === inventory) {
@@ -655,15 +672,18 @@ function eat(noun) {
         } else {
             outputText("You don't have a candy cane to eat");
         }
-    } else if (noun.toUpperCase() != "DEAD RAT" && noun.toUpperCase() != "RAT") {
-        outputText("You cant eat " + noun.toLowerCase());
+        return;
     }
+
+    // fail
+    intFailSound();
+    outputText("You can't eat " + noun.toLowerCase());
 }
 
 // throw item to random room
 function chuck(noun) {
     output.appendChild(document.createElement("br"));
-    let room = Math.floor(Math.random(8));
+    let room = Math.floor(Math.random() * 9);
     let found = false;
     for (let item of items) {
         if (item.name.toUpperCase() === noun && item.location === inventory) {
@@ -758,9 +778,12 @@ function ringBell(noun) {
         outputText("You lift the bell and give it a gentle ring. The sound shimmers through the halls, faint yet commanding. Somewhere in the distance, something stirs, acknowledging your call.");
         var audio = new Audio("/audio/bellSound.mp3");
         audio.play();
+        // remind player of tasks left
+        if (roomsNum === 3 && tasks < 3) {
+            outputText("However, it seems Santa remains asleep. Perhaps there are more tasks to complete before he fully awakens.");
+        }
         // if in santa's room, trigger ending
-        if (roomsNum === 3) {
-            outputText("A figure shifts in the shadows, eyes opening—he wakes up...");
+        if (roomsNum === 3 && tasks >= 3) {            
             santa();
         }
     } else {
@@ -769,43 +792,55 @@ function ringBell(noun) {
     }
 }
 
-// feed oats to reindeer
-function feedReindeer(noun) {
+// feed
+function feed(noun) {
     output.appendChild(document.createElement("br"));
-    if (noun.toUpperCase() === "REINDEER") {
-        // only works in garage
-        if (roomsNum === 1) {
-            if (items[5].location === inventory) {
-                var audio = new Audio("/audio/eating.mp3");
-                audio.play();
-                outputText("The reindeer sniff the oats, their breath visible in the cold air. Slowly, they snatch them from your hands, their glassy eyes glimmering with a strange satisfaction. A soft, low rumble echoes from the connector, as if the building itself is acknowledging your offering.");
-                items[5].used = true;
-                // remove oats from inventory
-                for (let item of items) {
-                    if (item.name.toUpperCase() === "OATS" && item.location === inventory) {
-                        item.location = gone;
-                        invDrop(item);
-                        tasks++;
-                    }
-                }
-            } else {
-                intFailSound();
-                outputText("You fumble around, but you have no oats to offer. The reindeer stare, unimpressed.");
-            }
-        } else {
+    noun = noun.toUpperCase();
+
+    // feed reindeer
+    if (noun === "REINDEER") {
+        if (roomsNum !== 1) {
             intFailSound();
             outputText("There aren't any reindeer here, only shadows that seem to shift when you blink.");
+            return;
         }
-    } else if (noun.toUpperCase() !== "SANTA") {
-        intFailSound();
-        outputText("You can't feed " + noun.toLowerCase());
+
+        if (items[5].location !== inventory) {
+            intFailSound();
+            outputText("You fumble around, but you have no oats to offer. The reindeer stare, unimpressed.");
+            return;
+        }
+
+        var audio = new Audio("/audio/eating.mp3");
+        audio.play();
+        outputText("The reindeer sniff the oats, their breath visible in the cold air. Slowly, they snatch them from your hands...");
+
+        items[5].used = true;
+
+        for (let item of items) {
+            if (item.name.toUpperCase() === "OATS" && item.location === inventory) {
+                item.location = gone;
+                invDrop(item);
+                tasks++;
+            }
+        }
+        return;
     }
-    if (noun.toUpperCase() === "SANTA" && roomsNum === 3 && items[5].location === inventory) {
-        outputText("You throw the oats towards Santa, but they simply bounce off his cold suit, landing uselessly on the floor. He remains motionless, unresponsive to your offering.");
-    } else {
-        intFailSound();
-        outputText("You don't have anything to feed Santa with.");
+
+    // feed santa
+    if (noun === "SANTA") {
+        if (roomsNum === 3 && items[5].location === inventory) {
+            outputText("You throw the oats towards Santa, but they simply bounce off his cold suit. He remains motionless.");
+        } else {
+            intFailSound();
+            outputText("Santa does not respond to your offering.");
+        }
+        return;
     }
+
+    // fail
+    intFailSound();
+    outputText("You can't feed " + noun.toLowerCase());
 }
 
 // put harness on reindeer
@@ -1011,21 +1046,16 @@ function walkSound() {
 // play pop sound
 function pop() {
     var audio = new Audio("/audio/pop.mp3");
-    audio.play;
+    audio.play();
 }
 
 // =======================
 // VIDEOS
 // =======================
 
-let johnInterval = null;
-
-// play john every 10 seconds
+// play john in 10 seconds
 function john() {
-    if (johnInterval) return; // only start once
-
-    johnInterval = setInterval(function () {
-
+    setTimeout(function () {
         // create video element
         let vid = document.createElement("video");
         vid.id = "johnVideo";
