@@ -930,21 +930,22 @@ function help(noun) {
         outputText("Pickup, get, grab, take");
         outputText("===");
         outputText("Drop items:");
-        outputText("Drop, remove, chuck");
+        outputText("Drop, remove, chuck, throw");
         outputText("===");
         outputText("Examine items:");
-        outputText("Examine, inspect, x");
+        outputText("Examine, inspect, x, lookat");
         outputText("===");
-        outputText("Open containers:")
-        outputText("Open, look in")
+        outputText("Open containers:");
+        outputText("Open, look in");
         outputText("===");
-        outputText("Other (item-specific / unique actions):");
-        outputText("Feed, ring, wrap, hitch, harness");
+        outputText("Item interactions:");
+        outputText("Feed, ring, wrap, harness, eat");
         outputText("===");
-        outputText("There are more to be discovered as you play");
+        outputText("Combat/Actions:");
+        outputText("kill, chain, kiss, shout, sleep");
         outputText("===");
-        outputText("Exit:")
-        outputText("Back or leave")
+        outputText("Exit:");
+        outputText("Back, leave");
     } else if (asks >= 3 && noun.toUpperCase() !== "PLEASE") {
         // complain if asked too many times
         outputText("A faint whisper echoes in the room: 'Are you seriously going to keep asking that?'");
