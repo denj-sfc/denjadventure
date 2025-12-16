@@ -578,12 +578,17 @@ function updateMinimap() {
         }
         // show discovered rooms
         if (discoveredrooms.includes(i)) {
-            roomsBox.innerHTML = rooms[i] ? rooms[i].name : "?";
+            // Use explicit checks and if/else to pick the room label
+            if (rooms[i] && rooms[i].name) {
+                roomsBox.textContent = rooms[i].name;
+            } else {
+                roomsBox.textContent = "?";
+            }
             roomsBox.style.backgroundColor = "#1a1a1a";
             roomsBox.style.color = "#b0b0b0";
         } else {
             // show undiscovered rooms as question marks
-            roomsBox.innerHTML = "?";
+            roomsBox.textContent = "?";
             roomsBox.style.backgroundColor = "#0a0a0a";
             roomsBox.style.color = "#404040";
         }
