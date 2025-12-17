@@ -1,15 +1,15 @@
 // declare variables
-let tasks = 0 // completed tasks
-let asks = 0 // help requests
-let rooms = [], roomsNum // room array and current room number
-let items = [], itemsNum // item array and current item number
-let discoveredrooms = [] // array of rooms player has visited
-let inventory = -1 // location for items in inventory
-let gone = -2 // location for removed items
-let box = -3 // location for items in box
+let tasks = 0
+let asks = 0
+let rooms = [], roomsNum
+let items = [], itemsNum
+let discoveredrooms = []
+let inventory = -1
+let gone = -2
+let box = -3
 let boxOpen = false
 let santaChained = false
-const MAPWIDTH = 3 // width of map (3x3 grid)
+const MAPWIDTH = 3
 
 // =======================
 // INPUT CHECK
@@ -237,7 +237,7 @@ function kill(noun) {
                 setTimeout(function () {
                     window.location.href = "gameEnd.html";
                 }, 15000);
-            } else{
+            } else {
                 var audio = new Audio("/audio/unsheath.mp3");
                 audio.play();
                 setTimeout(function () {
@@ -248,7 +248,7 @@ function kill(noun) {
                 setTimeout(function () {
                     window.location.href = "gameEnd.html";
                 }, 7000);
-            }           
+            }
         } else {
             intFailSound();
             outputText("You don't have the facilities for that... maybe you need a *knife*")
@@ -277,7 +277,7 @@ function santa() {
             outputText("Santa rises slowly from the command chair, his glossy eyes locking onto yours. The air thickens around you, charged with a strange, expectant energy.");
             outputText("His voice, low and otherworldly, whispers: 'Thank you...'");
         }, 2000);
-        
+
         setTimeout(function () {
             output.appendChild(document.createElement("br"));
             outputText("The room trembles violently, walls cracking and dust falling like fine snow. Cracks of brilliant light splinter across reality.");
@@ -531,7 +531,7 @@ function initGame() {
 
     items[15] = {
         name: "Clipboard",
-        desc: "A clipboard, pages slightly stained by blood spatter - 'THINGS TO DO: Give Santa documents, Wrap toys, Feed reindeer, Harness reindeer, Wake up Santa with bell'",
+        desc: "A clipboard, pages slightly stained by blood spatter - 'THINGS TO DO: Get papers for Santa, Wrap toys, Feed reindeer, Harness reindeer, Wake up Santa with bell'",
         location: inventory,
         visible: true,
         gettable: true,
@@ -550,7 +550,7 @@ function initGame() {
     outputText("Let's see what you have to do today on your clipboard...");
     output.appendChild(document.createElement("br"));
     // give player clipboard
-    invAdd(items[15]); 
+    invAdd(items[15]);
     // start player in front desk room
     roomsNum = 7;
     // track first room as discovered
@@ -783,7 +783,7 @@ function ringBell(noun) {
             outputText("However, it seems Santa remains asleep. Perhaps there are more tasks to complete before he fully awakens.");
         }
         // if in santa's room, trigger ending
-        if (roomsNum === 3 && tasks >= 3) {            
+        if (roomsNum === 3 && tasks >= 3) {
             santa();
         }
     } else {
@@ -946,9 +946,9 @@ function damagePlayer() {
     let remove = setInterval(function () {
         x.removeAttribute("class", "damage");
     }, 4000);
-    
-    // Store intervals globally so they can be cleared
-    window.intervals = {damageInterval: damage, removeInterval: remove};
+
+    // store intervals
+    window.intervals = { damageInterval: damage, removeInterval: remove };
 }
 
 // stop player damage UI
